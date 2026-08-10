@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   const key = process.env.APIFOOTBALL_KEY;
   if (!key) return res.status(500).json({ error: 'APIFOOTBALL_KEY não está configurada no Vercel.' });
 
-  const league = req.query.league || '94';
+  const league = req.query.league || '2';
   const headers = { Authorization: `Token ${key}` };
 
   try {
