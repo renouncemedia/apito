@@ -1,5 +1,7 @@
-// /api/fixture.js
-// ?id=123456  → eventos + escalações de um jogo específico
+// /api/fixture.js — Bzzoiro Sports Data (BSD)
+// ?id=223510
+
+const BASE = 'https://sports.bzzoiro.com/api/v2';
 
 export default async function handler(req, res) {
   const key = process.env.APIFOOTBALL_KEY;
@@ -8,51 +10,50 @@ export default async function handler(req, res) {
   const id = req.query.id;
   if (!id) return res.status(400).json({ error: 'Falta o parâmetro id.' });
 
-  const headers = { 'x-apisports-key': key };
+  const headers = { Authorization: `Token ${key}` };
 
   try {
-    const [eventsResp, lineupsResp, fixtureResp] = await Promise.all([
-      fetch(`https://v3.football.api-sports.io/fixtures/events?fixture=${id}`, { headers }),
-      fetch(`https://v3.football.api-sports.io/fixtures/lineups?fixture=${id}`, { headers }),
-      fetch(`https://v3.football.api-sports.io/fixtures?id=${id}`, { headers })
+    const [detailResp, incidentsResp, lineupsResp] = await Promise.all([
+      fetch(`${BASE}/events/${id}/`, { headers }),
+      fetch(`${BASE}/events/${id}/incidents/`, { headers }),
+      fetch(`${BASE}/events/${id}/lineups/`, { headers })
     ]);
 
-    const eventsData = await eventsResp.json();
-    const lineupsData = await lineupsResp.json();
-    const fixtureData = await fixtureResp.json();
+    const detailBody = await detailResp.text();
+    if (!detailResp.ok) return res.status(detailResp.status).json({ error: `Erro ${detailResp.status}: ${detailBody.slice(0,300)}` });
+    const detail = JSON.parse(detailBody);
 
-    const fixture = fixtureData.response?.[0];
+    const incidentsData = incidentsResp.ok ? await incidentsResp.json() : { results: [] };
+    const lineupsData = lineupsResp.ok ? await lineupsResp.json() : { results: [] };
 
-    const eventos = (eventsData.response || []).map(e => ({
-      minuto: e.time.elapsed,
-      tipo: e.type,          // Goal, Card, subst
-      detalhe: e.detail,
-      equipa: e.team.name,
-      jogador: e.player.name,
-      assistencia: e.assist?.name || null
+    const jogo = {
+      liga: detail.league?.name || 'Liga',
+      estado: detail.status,
+      minuto: detail.current_minute ?? null,
+      casa: { nome: detail.home_team?.name || 'Casa', golos: detail.home_score ?? null },
+      fora: { nome: detail.away_team?.name || 'Fora', golos: detail.away_score ?? null }
+    };
+
+    const eventosBrutos = incidentsData.results || incidentsData.incidents || incidentsData || [];
+    const eventos = eventosBrutos.map(e => ({
+      minuto: e.minute,
+      tipo: e.type,
+      equipa: e.team_name || e.team?.name || '',
+      jogador: e.player_name || e.player?.name || '',
+      assistencia: e.assist_player_name || null
     }));
 
-    const escalacoes = (lineupsData.response || []).map(l => ({
-      equipa: l.team.name,
-      formacao: l.formation,
-      titulares: (l.startXI || []).map(p => ({ nome: p.player.name, numero: p.player.number, posicao: p.player.pos })),
-      suplentes: (l.substitutes || []).map(p => ({ nome: p.player.name, numero: p.player.number, posicao: p.player.pos }))
+    const escalacoesBrutas = lineupsData.results || lineupsData.lineups || lineupsData || [];
+    const escalacoes = (Array.isArray(escalacoesBrutas) ? escalacoesBrutas : []).map(l => ({
+      equipa: l.team_name || l.team?.name || '',
+      formacao: l.formation || null,
+      titulares: (l.starting_xi || l.startXI || []).map(p => ({ nome: p.player_name || p.name, numero: p.number }))
     }));
 
-    res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
-    return res.status(200).json({
-      jogo: fixture ? {
-        estado: fixture.fixture.status.short,
-        minuto: fixture.fixture.status.elapsed,
-        liga: fixture.league.name,
-        casa: { nome: fixture.teams.home.name, logo: fixture.teams.home.logo, golos: fixture.goals.home },
-        fora: { nome: fixture.teams.away.name, logo: fixture.teams.away.logo, golos: fixture.goals.away }
-      } : null,
-      eventos,
-      escalacoes
-    });
+    res.setHeader('Cache-Control', 's-maxage=20, stale-while-revalidate=40');
+    return res.status(200).json({ jogo, eventos, escalacoes });
 
   } catch (err) {
-    return res.status(500).json({ error: 'Falha de rede ao contactar a API-Football.' });
+    return res.status(500).json({ error: `Falha de rede/parse: ${err.message}` });
   }
 }
