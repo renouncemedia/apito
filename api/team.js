@@ -70,8 +70,9 @@ export default async function handler(req, res) {
     const ligaInfo = await safeJson(`${BASE}/leagues/${ligaId}/`, headers);
     nomeLiga = ligaInfo?.name || null;
     const seasonInfo = await safeJson(`${BASE}/leagues/${ligaId}/season/`, headers);
-    if (seasonInfo){
-      const standingsData = await safeJson(`${BASE}/leagues/${ligaId}/standings/?season_id=${seasonInfo.id}`, headers);
+    const seasonId0 = seasonInfo?.season?.id ?? seasonInfo?.id;
+    if (seasonId0){
+      const standingsData = await safeJson(`${BASE}/leagues/${ligaId}/standings/?season_id=${seasonId0}`, headers);
       const tabela = standingsData?.standings || [];
       classificacao = tabela.map(t => ({
         posicao: t.position, equipaId: t.team_id, equipa: t.team_name,
@@ -101,8 +102,9 @@ export default async function handler(req, res) {
   let melhoresJogadores = [];
   if (ligaId){
     const seasonInfo2 = await safeJson(`${BASE}/leagues/${ligaId}/season/`, headers);
-    if (seasonInfo2){
-      const scorersData = await safeJson(`${BASE}/leagues/${ligaId}/top/scorers/?season_id=${seasonInfo2.id}&limit=50`, headers);
+    const seasonId2 = seasonInfo2?.season?.id ?? seasonInfo2?.id;
+    if (seasonId2){
+      const scorersData = await safeJson(`${BASE}/leagues/${ligaId}/top/scorers/?season_id=${seasonId2}&limit=50`, headers);
       const lista = scorersData?.leaders || [];
       melhoresJogadores = lista
         .filter(p => String(p.team_id) === String(id))
