@@ -92,7 +92,7 @@ export default async function handler(req, res) {
       fora: (lineupsBody.unavailable_players.away || []).map(p => ({ nome: p.name, motivo: p.reason || p.status }))
     } : null;
 
-    // ---- Estatísticas (formato confirmado com dados reais) ----
+    // ---- Estatísticas + momentum + posições médias (formato confirmado com dados reais) ----
     const statsResp = await fetch(`${BASE}/events/${id}/stats/`, { headers }).then(r => r.ok ? r.json() : null).catch(() => null);
     const statsHome = statsResp?.stats?.home;
     const statsAway = statsResp?.stats?.away;
@@ -120,8 +120,15 @@ export default async function handler(req, res) {
       }
     }
 
+    const momentum = Array.isArray(statsResp?.momentum) ? statsResp.momentum.map(m => ({ minuto: m.m, valor: m.v })) : [];
+
+    const posicoesMedias = statsResp?.average_positions ? {
+      casa: (statsResp.average_positions.home || []).map(p => ({ nome: p.name, x: p.x, y: p.y, posicao: p.pos, numero: p.n })),
+      fora: (statsResp.average_positions.away || []).map(p => ({ nome: p.name, x: p.x, y: p.y, posicao: p.pos, numero: p.n }))
+    } : null;
+
     res.setHeader('Cache-Control', 's-maxage=20, stale-while-revalidate=40');
-    return res.status(200).json({ jogo, eventos, escalacoes, lineupsStatus, h2h, emFalta, estatisticas });
+    return res.status(200).json({ jogo, eventos, escalacoes, lineupsStatus, h2h, emFalta, estatisticas, momentum, posicoesMedias });
 
   } catch (err) {
     return res.status(500).json({ error: `Falha de rede/parse: ${err.message}` });
