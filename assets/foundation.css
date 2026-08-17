@@ -338,15 +338,8 @@ html[data-theme="light"]{
 .gradient-hero{ background: var(--gradient-hero); }
 .gradient-entity{ background: var(--gradient-entity); }
 
-/* ---------- 16. FONT-LOAD VERIFICATION HOOK (Pass 1 only) ----------
-   A single off-screen, non-interactive probe per page confirms
-   Big Shoulders Display/Text have loaded and render with real
-   tabular figures, without altering any visible composition.
-   Safe to remove once Pass 4+ apply these roles to live content. */
-.font-load-probe{
-  position: absolute;
-  width: 1px; height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
+/* Section 16 (Pass 1 font-load verification hook, .font-load-probe) was
+   removed in Pass 2 — its markup was temporary Pass 1 verification
+   infrastructure and has been deleted from all five pages now that font
+   loading is confirmed. Font loading and typography tokens themselves
+   (sections 9–10 above) are unaffected. */

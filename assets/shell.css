@@ -1,0 +1,151 @@
+/* ============================================================
+   APITO V2 — SHELL / NAVIGATION
+   Pass 2 of APITO_DESIGN_SYSTEM_V2.md, Section 16.
+
+   Canonical, single-source styling for the application shell,
+   consumed by all five pages: desktop sidebar, mobile topbar,
+   persistent mobile bottom navigation, and the shared brand
+   mark. The markup these rules style is generated once by
+   assets/shell.js and injected identically into every page —
+   this file only ever needs to be edited in one place.
+
+   Scope of this file (Pass 2 only): shell/navigation chrome.
+   It intentionally does NOT style MatchRow, DataTable,
+   EntityHero, MatchHero, cards, or any other content
+   component — those remain untouched legacy CSS inside each
+   page until their respective later passes.
+
+   Consumes only canonical tokens from assets/foundation.css —
+   no new component-specific values are introduced here beyond
+   the two shell-only layout constants foundation.css already
+   exposes (--sidebar-w, --bottomnav-h).
+   ============================================================ */
+
+/* ---------- Root shell layout ---------- */
+.app-shell{ display:flex; min-height:100vh; }
+
+.main-area{ flex:1; min-width:0; padding-bottom: var(--space-6); }
+@media (max-width:1023px){
+  /* Keeps page content clear of the persistent bottom nav — see
+     Section 4 of the Pass 2 brief ("appropriate content bottom
+     padding so page content cannot disappear underneath"). */
+  .main-area{ padding-bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom) + var(--space-4)); }
+}
+
+/* ---------- Shared brand mark (sidebar + mobile topbar) ---------- */
+.sidebar .brand{ display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:28px; }
+.sidebar .brand .mark{ width:32px; height:32px; border-radius: var(--radius-sm); background: var(--accent-lime); display:flex; align-items:center; justify-content:center; }
+.sidebar .brand .mark::before{ content:""; width:13px; height:13px; background:#0D0B14; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+.sidebar .brand .name{ font-weight:800; font-size:18px; }
+
+.mobile-brand{ display:flex; align-items:center; gap:9px; flex-shrink:0; }
+.mobile-brand .mark{ width:30px; height:30px; border-radius:8px; background: var(--accent-lime); display:flex; align-items:center; justify-content:center; }
+.mobile-brand .mark::before{ content:""; width:12px; height:12px; background:#0D0B14; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+.mobile-brand .name{ font-weight:800; font-size:17px; }
+@media (min-width:1024px){ .mobile-brand{ display:none; } }
+
+/* ---------- Desktop sidebar ----------
+   Subtle Section Surface per the design system (Section 10):
+   structural, not card-like — one hairline edge, no shadow,
+   no gradient, no floating container. */
+.sidebar{
+  width: var(--sidebar-w);
+  flex-shrink:0;
+  background: var(--surface-subtle);
+  border-right: 1px solid var(--border-subtle);
+  padding: 22px var(--space-4);
+  display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh;
+}
+@media (max-width:1023px){ .sidebar{ display:none; } }
+
+/* ---------- Nav item (shared shape for sidebar + reused by bottom-nav's
+   focus/hover logic conventions — bottom-nav has its own compact variant
+   below since its layout is icon-over-label, not icon-beside-label). ---------- */
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  width:100%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  border-left: 2px solid transparent;
+  background: none;
+  font: 600 var(--type-row-primary-size)/var(--type-row-primary-leading) var(--type-row-primary-family);
+  color: var(--text-secondary);
+  text-align:left;
+  text-decoration:none;
+  cursor:pointer;
+  margin-bottom:3px;
+  min-height:44px;
+}
+.nav-item svg{ width:18px; height:18px; opacity:0.8; flex-shrink:0; }
+/* Active state: left-edge tint + lime text, replacing V1's filled pill —
+   the same "left-edge over filled shapes" principle used everywhere else
+   status is shown in this system (Design Principle #5). */
+.nav-item.active{ color: var(--accent-lime); font-weight:700; border-left-color: var(--accent-lime); }
+.nav-item:hover:not(.active){ background: var(--surface-elevated); color: var(--text-primary); }
+
+.sidebar-promo{ margin-top:auto; background: linear-gradient(150deg, var(--accent-purple), #5B3FE0); border-radius: var(--radius-xl); padding: var(--space-4); }
+.sidebar-promo .title{ font-size:13px; font-weight:800; line-height:1.3; }
+.sidebar-promo .sub{ font-size:11px; opacity:0.8; margin-top:4px; }
+.sidebar-promo .cta{ display:inline-block; margin-top:12px; background:#fff; color:#161022; font-size:11.5px; font-weight:800; padding:8px 14px; border-radius: var(--radius-pill); }
+
+/* ---------- Topbar (all five pages) ----------
+   Utility/data-moment treatment per the Pass 2 brief: flat
+   Subtle Section Surface, no decorative gradient, no card,
+   no oversized editorial identity — that belongs to
+   MatchHero/EntityHero in a later pass, not here. */
+.topbar{
+  position:sticky; top:0; z-index:20;
+  background: var(--surface-subtle);
+  display:flex; align-items:center; gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.search-box{ flex:1; display:flex; align-items:center; gap:8px; background: var(--surface-data); border:1px solid var(--border-subtle); border-radius: var(--radius-pill); padding:0 16px; height:40px; min-width:0; }
+.search-box svg{ width:14px; height:14px; opacity:0.45; flex-shrink:0; }
+.search-box input{ background:none; border:none; outline:none; color: var(--text-primary); font-size:16px; width:100%; font-family: var(--font-interface); }
+.search-box input::placeholder{ color: var(--text-tertiary); }
+
+.icon-btn{ width:44px; height:44px; border-radius:50%; background: var(--surface-data); border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:inherit; }
+.icon-btn svg{ width:15px; height:15px; opacity:0.8; }
+
+/* ---------- Mobile bottom navigation (new in V2) ----------
+   Persistent, always visible, never hidden behind a hamburger
+   or scroll-based show/hide (Section 10 / Design Principle #9).
+   The one piece of shell chrome allowed a touch of elevation —
+   it is functionally an overlay-adjacent surface — expressed
+   with a border-top rather than a shadow, per Section 7. */
+.bottom-nav{
+  display:none;
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  height: var(--bottomnav-h);
+  background: var(--surface-elevated);
+  border-top: 1px solid var(--border-subtle);
+  padding: var(--space-1) var(--space-2);
+  padding-bottom: calc(var(--space-1) + env(safe-area-inset-bottom));
+  align-items: stretch;
+  justify-content: space-around;
+}
+@media (max-width:1023px){ .bottom-nav{ display:flex; } }
+
+.bn-item{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px;
+  flex:1;
+  min-width:44px; min-height:44px;
+  border:none; background:none;
+  color: var(--text-secondary);
+  text-decoration:none;
+  cursor:pointer;
+  border-radius: var(--radius-sm);
+}
+.bn-item .bn-icon svg{ width:20px; height:20px; }
+.bn-item .bn-label{ font: var(--type-metadata-weight) var(--type-metadata-size)/var(--type-metadata-leading) var(--type-metadata-family); }
+.bn-item.active{ color: var(--accent-lime); }
+.bn-item.active .bn-label{ font-weight:600; }
+.bn-item:focus-visible{ outline:2px solid var(--accent-lime); outline-offset:-2px; border-radius: var(--radius-sm); }
+
+/* Label truncation fallback for very narrow screens — icon remains the
+   primary target, label reappears once space allows (Section 13). */
+@media (max-width:379px){ .bn-item .bn-label{ font-size:9.5px; } }
