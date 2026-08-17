@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Equipa · Apito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Big+Shoulders+Display:wght@500;700;800;900&family=Big+Shoulders+Text:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- APITO V2 — canonical foundation tokens, shared by all five pages. See assets/foundation.css -->
+<link rel="stylesheet" href="assets/foundation.css">
+<style>
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ background: var(--bg); color: var(--text-0); font-family:'Inter', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; appearance:none; -webkit-appearance:none; }
+  .shell{ max-width:1040px; margin:0 auto; padding:24px; } @media (max-width:640px){ .shell{ padding:14px; } }
+  .back{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color: var(--text-1); margin-bottom:16px; }
+
+  .team-header{ display:flex; align-items:center; gap:16px; margin-bottom:20px; background: linear-gradient(120deg, #1E3A8A 0%, #172554 55%, #0D0B14 100%); border:1px solid var(--line-strong); border-radius:20px; padding:22px; color:#fff; }
+  .team-header img, .team-header .crest-fallback{ width:60px; height:60px; border-radius:16px; background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); object-fit:contain; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:19px; flex-shrink:0; }
+  .team-header .name{ font-size: clamp(19px,4vw,25px); font-weight:800; color:#fff; }
+  .team-header .country{ font-size:11px; color: rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+
+  .tabs{ display:flex; gap:22px; overflow-x:auto; scrollbar-width:none; padding-bottom:14px; margin-bottom:18px; border-bottom:1px solid var(--line); position:sticky; top:0; background: var(--bg); z-index:10; padding-top:6px; }
+  .tab-content{ animation: fadeIn .18s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; border-radius:6px; }
+  .breadcrumb{ font-size:12px; color: var(--text-2); margin-bottom:10px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .breadcrumb a{ color: var(--text-1); }
+  .breadcrumb a:hover{ color: var(--text-0); text-decoration:underline; }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab-btn{ appearance:none; -webkit-appearance:none; flex-shrink:0; padding:2px 0 12px; font-size:13.5px; font-weight:600; color: var(--text-2); white-space:nowrap; cursor:pointer; position:relative; }
+  .tab-btn.active{ color: var(--text-0); }
+  .tab-btn.active::after{ content:""; position:absolute; left:0; right:0; bottom:-15px; height:2px; background: var(--white); }
+  .tab-content{ display:none; }
+  .tab-content.active{ display:block; }
+
+  h2{ font-size:14.5px; font-weight:700; margin:18px 0 10px; }
+  h2:first-child{ margin-top:0; }
+
+  .card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:8px 14px; }
+
+  .match-row{ display:flex; align-items:center; justify-content:space-between; padding:11px 4px 11px 10px; border-bottom:1px solid var(--line); font-size:13.5px; border-left:3px solid transparent; }
+  .match-row.match-casa{ border-left-color:#3B82F6; }
+  .match-row.match-fora{ border-left-color:#EF4444; }
+  .match-row:last-child{ border-bottom:none; }
+  .match-row .score{ font-weight:800; }
+
+  .zone-bar{ width:3px; height:20px; border-radius:2px; }
+  .zone-bar.z1{ background: var(--blue); }
+  .zone-bar.z2{ background:#3B82F6; }
+  .zone-bar.z3{ background:#14B8A6; }
+  .table-row{ display:grid; grid-template-columns:4px 18px 1fr 22px 24px 22px 28px; align-items:center; gap:6px; padding:8px 2px; font-size:12.5px; border-bottom:1px solid var(--line); }
+  .table-row:last-child{ border-bottom:none; }
+  .table-row.head{ color: var(--text-2); font-size:9px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
+  .table-row.self{ background: rgba(91,109,248,0.10); border-radius:8px; font-weight:700; }
+  .table-row .pos{ color: var(--text-2); font-weight:700; }
+  .table-row .n{ text-align:center; color: var(--text-1); }
+  .table-row .pts{ text-align:center; font-weight:800; }
+
+  .squad-group-title{ font-size:11px; font-weight:700; color: var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin:16px 0 8px; }
+  .squad-group-title:first-child{ margin-top:0; }
+  .squad-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
+  .player-card{ background: var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; cursor:pointer; }
+  .player-card .num{ font-weight:800; color: var(--lime); font-size:12px; }
+  .player-card .nome{ font-size:13px; font-weight:600; margin-top:4px; }
+  .player-card .pais{ font-size:10.5px; color: var(--text-2); margin-top:2px; }
+
+  .top-player-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 4px; border-bottom:1px solid var(--line); font-size:13px; }
+  .top-player-row:last-child{ border-bottom:none; }
+  .top-player-row .goals{ font-weight:800; color: var(--lime); }
+
+  .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
+  .stat-box{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; text-align:center; }
+  .stat-box .val{ font-size:28px; font-weight:900; color: var(--lime); }
+  .stat-box .label{ font-size:11px; color: var(--text-2); margin-top:4px; }
+
+  .filter-pills{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
+  .filter-pills::-webkit-scrollbar{ display:none; }
+  .filter-pill{ appearance:none; -webkit-appearance:none; flex-shrink:0; padding:7px 13px; border-radius:100px; background: var(--card); border:1px solid var(--line); font-size:11.5px; font-weight:600; color: var(--text-1); white-space:nowrap; cursor:pointer; }
+  .filter-pill.active{ background: var(--white); color: var(--bg); border-color:transparent; }
+  .round-group-title{ font-size:11px; font-weight:700; color: var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin:14px 0 6px; }
+  .round-group-title:first-child{ margin-top:0; }
+
+  .empty-note{ font-size:13px; color: var(--text-2); padding:10px 0; }
+
+  /* ---------- Shell de navegação (partilhada com index.html) ---------- */
+  .app-shell{ display:flex; min-height:100vh; }
+  .sidebar{ width: var(--sidebar-w); flex-shrink:0; background: var(--bg-2); border-right:1px solid var(--line); padding:22px 16px; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+  .sidebar .brand{ display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:28px; }
+  .sidebar .brand .mark{ width:32px; height:32px; border-radius:9px; background: var(--lime); display:flex; align-items:center; justify-content:center; }
+  .sidebar .brand .mark::before{ content:""; width:13px; height:13px; background:#0D0B14; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+  .sidebar .brand .name{ font-weight:800; font-size:18px; }
+  .nav-item{ display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:12px; font-size:13.5px; font-weight:600; color: var(--text-1); margin-bottom:3px; min-height:44px; }
+  .nav-item svg{ width:18px; height:18px; opacity:0.8; flex-shrink:0; }
+  .nav-item.active{ background: var(--lime-dim); color: var(--lime); }
+  .nav-item:hover:not(.active){ background: var(--card-2); color: var(--text-0); }
+  .sidebar-promo{ margin-top:auto; background: linear-gradient(150deg, var(--purple), #5B3FE0); border-radius:16px; padding:16px; }
+  .sidebar-promo .title{ font-size:13px; font-weight:800; line-height:1.3; }
+  .sidebar-promo .sub{ font-size:11px; opacity:0.8; margin-top:4px; }
+  .sidebar-promo .cta{ display:inline-block; margin-top:12px; background:#fff; color:#161022; font-size:11.5px; font-weight:800; padding:8px 14px; border-radius:100px; }
+  @media (max-width: 1023px){ .sidebar{ display:none; } }
+
+  .main-area{ flex:1; min-width:0; padding-bottom: 24px; }
+  
+
+  .bottom-nav{ display:none; }
+</style>
+</head>
+<body>
+<!-- Pass 1 verification only: confirms Inter + Big Shoulders Display/Text have loaded
+     with correct tabular numerals. Not part of page composition. Remove once Pass 4+
+     applies these roles to live content. -->
+<div class="font-load-probe" aria-hidden="true">
+  <span class="type-display-score">0123456789</span>
+  <span class="type-table-numeric">0123456789</span>
+  <span style="font-family:var(--font-interface)">Apito</span>
+</div>
+<div class="app-shell">
+  <nav class="sidebar" aria-label="Navegação principal">
+    <div class="brand"><div class="mark"></div><span class="name">Apito</span></div>
+    <a href="index.html" class="nav-item " id="nav-inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Início</a>
+    <a href="index.html?filtro=ao-vivo" class="nav-item " id="nav-ao-vivo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>Ao vivo</a>
+    <a href="index.html?filtro=favoritos" class="nav-item " id="nav-favoritos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17.3l-6.2 3.6 1.6-7-5.4-4.7 7.1-.6L12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7z"/></svg>Favoritos</a>
+    <button class="nav-item" id="nav-tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Tema</button>
+    <div class="sidebar-promo">
+      <div class="title">Apito PRO</div>
+      <div class="sub">Estatísticas avançadas e sem limites de pedidos.</div>
+      <div class="cta">Em breve</div>
+    </div>
+  </nav>
+
+  <div class="main-area">
+<div class="shell">
+  <a class="back" href="index.html">← Voltar aos resultados</a>
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <div class="team-header" id="team-header">
+    <div class="crest-fallback">—</div>
+    <div><div class="name">A carregar...</div><div class="country"></div></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="details">Detalhes</button>
+    <button class="tab-btn" data-tab="matches">Jogos</button>
+    <button class="tab-btn" data-tab="standings">Classificação</button>
+    <button class="tab-btn" data-tab="squad">Plantel</button>
+    <button class="tab-btn" data-tab="topplayers">Melhores jogadores</button>
+    <button class="tab-btn" data-tab="stats">Estatísticas</button>
+  </div>
+
+  <div class="tab-content active" id="tab-details">
+    <h2>Próximo jogo</h2>
+    <div class="card" id="details-next"><div class="empty-note">A carregar...</div></div>
+    <h2>Últimos resultados</h2>
+    <div class="card" id="details-recent"><div class="empty-note">A carregar...</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-matches">
+    <div class="filter-pills" id="matches-view-filter">
+      <button class="filter-pill active" data-view="date">Por data</button>
+      <button class="filter-pill" data-view="round">Por jornada</button>
+      <button class="filter-pill" data-view="team">Por adversário</button>
+    </div>
+    <div class="card" id="matches-content"><div class="empty-note">A carregar...</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-standings">
+    <h2 id="standings-title">Classificação</h2>
+    <div class="card" id="standings-table"><div class="empty-note">A carregar...</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-squad">
+    <div class="filter-pills" id="squad-position-filter">
+      <button class="filter-pill active" data-pos="Todos">Todos</button>
+    </div>
+    <div id="squad-content"><div class="empty-note">A carregar...</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-topplayers">
+    <h2>Melhores marcadores da equipa</h2>
+    <div class="card" id="topplayers-content"><div class="empty-note">A carregar...</div></div>
+  </div>
+
+  <div class="tab-content" id="tab-stats">
+    <h2>Resumo (últimos jogos analisados)</h2>
+    <div id="stats-content"><div class="empty-note">A carregar...</div></div>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  root.setAttribute('data-theme', localStorage.getItem('apito-theme') || 'dark');
+
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  const ligaParam = params.get('league');
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function linhaJogo(j){
+    const data = new Date(j.data).toLocaleDateString('pt-PT', { day:'2-digit', month:'short' });
+    const temResultado = j.golosCasa !== null && j.golosCasa !== undefined;
+    const golos = temResultado ? `${j.golosCasa} - ${j.golosFora}` : data;
+    const casaEQ = eq && j.casa === eq.nome;
+    const ladoClasse = casaEQ ? 'match-casa' : 'match-fora';
+    return `<div class="match-row ${ladoClasse}"><span>${j.casa} vs ${j.fora}</span><span class="score">${golos}</span></div>`;
+  }
+
+  let eq = null;
+
+  async function carregar(){
+    if (!id){
+      document.getElementById('team-header').innerHTML = '<div class="empty-note">Nenhuma equipa selecionada.</div>';
+      return;
+    }
+    try {
+      let url = `/api/team?id=${id}`;
+      if (ligaParam) url += `&league=${ligaParam}`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error);
+
+      eq = data.equipa;
+      document.getElementById('breadcrumb').innerHTML = data.nomeLiga
+        ? `<a href="index.html">Início</a> / <a href="league.html?id=${data.ligaId || ''}">${data.nomeLiga}</a> / ${eq.nome}`
+        : `<a href="index.html">Início</a> / ${eq.nome}`;
+      document.getElementById('team-header').innerHTML = `
+        <img src="https://sports.bzzoiro.com/img/team/${eq.id}/?bg=transparent" alt="${eq.nome}" onerror="this.outerHTML='<div class=\\'crest-fallback\\'>${eq.nome.slice(0,2).toUpperCase()}</div>'">
+        <div><div class="name">${eq.nome}</div><div class="country">${eq.pais || ''}${data.nomeLiga ? ' · ' + data.nomeLiga : ''}</div></div>`;
+
+      document.getElementById('details-next').innerHTML = data.proximos?.length ? linhaJogo(data.proximos[0]) : '<div class="empty-note">Sem jogos agendados.</div>';
+      document.getElementById('details-recent').innerHTML = data.recentes?.length ? data.recentes.slice(0,5).map(linhaJogo).join('') : '<div class="empty-note">Sem resultados recentes.</div>';
+
+      const todosJogos = [...(data.proximos||[]), ...(data.recentes||[])];
+      function renderMatchesView(view){
+        const container = document.getElementById('matches-content');
+        if (!todosJogos.length){ container.innerHTML = '<div class="empty-note">Sem jogos disponíveis.</div>'; return; }
+        if (view === 'date'){
+          const ordenados = [...todosJogos].sort((a,b)=>new Date(a.data)-new Date(b.data));
+          container.innerHTML = ordenados.map(linhaJogo).join('');
+        } else if (view === 'round'){
+          const porJornada = {};
+          todosJogos.forEach(j => { const c = j.jornada ?? 'Sem jornada'; (porJornada[c] ||= []).push(j); });
+          const chaves = Object.keys(porJornada).sort((a,b)=>(Number(a)||0)-(Number(b)||0));
+          container.innerHTML = chaves.map(k => `<div class="round-group-title">Jornada ${k}</div>${porJornada[k].map(linhaJogo).join('')}`).join('');
+        } else if (view === 'team'){
+          const porAdv = {};
+          todosJogos.forEach(j => { const a = j.casa === eq.nome ? j.fora : j.casa; (porAdv[a] ||= []).push(j); });
+          const nomes = Object.keys(porAdv).sort();
+          container.innerHTML = nomes.map(n => `<div class="round-group-title">${n}</div>${porAdv[n].map(linhaJogo).join('')}`).join('');
+        }
+      }
+      renderMatchesView('date');
+      document.querySelectorAll('#matches-view-filter .filter-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#matches-view-filter .filter-pill').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          renderMatchesView(btn.dataset.view);
+        });
+      });
+
+      if (data.nomeLiga) document.getElementById('standings-title').textContent = `Classificação · ${data.nomeLiga}`;
+      const classificacao = data.classificacao || [];
+      if (classificacao.length){
+        const linhas = classificacao.map(t => {
+          const zona = t.posicao<=3 ? 'z1' : t.posicao<=6 ? 'z2' : t.posicao<=7 ? 'z3' : '';
+          return `<div class="table-row ${String(t.equipaId)===String(eq.id)?'self':''}">
+            <span class="zone-bar ${zona}"></span><span class="pos">${t.posicao}</span><span>${t.equipa}</span>
+            <span class="n">${t.jogos}</span><span class="n">${t.saldo>0?'+'+t.saldo:t.saldo}</span><span class="n">${t.vitorias}</span><span class="pts">${t.pontos}</span>
+          </div>`;
+        }).join('');
+        document.getElementById('standings-table').innerHTML = `<div class="table-row head"><span></span><span>#</span><span>Equipa</span><span>J</span><span>DG</span><span>V</span><span>Pts</span></div>${linhas}`;
+      } else {
+        document.getElementById('standings-table').innerHTML = '<div class="empty-note">Classificação não disponível.</div>';
+      }
+
+      const grupos = data.plantel || {};
+      const nomesGrupos = Object.keys(grupos);
+      function renderSquad(filtro){
+        const chaves = filtro === 'Todos' ? nomesGrupos : nomesGrupos.filter(g=>g===filtro);
+        document.getElementById('squad-content').innerHTML = chaves.length
+          ? chaves.map(g => `
+            <div class="squad-group-title">${g}</div>
+            <div class="squad-grid">${grupos[g].map(p => `
+              <div class="player-card" onclick="window.location.href='player.html?id=${p.id}'">
+                <div class="num">${p.numero ?? '-'}</div><div class="nome">${p.nome}</div><div class="pais">${p.pais || ''}</div>
+              </div>`).join('')}</div>`).join('')
+          : '<div class="empty-note">Plantel não disponível.</div>';
+      }
+      const filterContainer = document.getElementById('squad-position-filter');
+      filterContainer.innerHTML = ['Todos', ...nomesGrupos].map((g,i) => `<button class="filter-pill ${i===0?'active':''}" data-pos="${g}">${g}</button>`).join('');
+      renderSquad('Todos');
+      filterContainer.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterContainer.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          renderSquad(btn.dataset.pos);
+        });
+      });
+
+      const melhores = data.melhoresJogadores || [];
+      document.getElementById('topplayers-content').innerHTML = melhores.length
+        ? melhores.map(p => `<div class="top-player-row"><span>${p.jogador}${p.posicao?' · '+p.posicao:''}</span><span class="goals">${p.golos}</span></div>`).join('')
+        : '<div class="empty-note">Sem dados de melhores marcadores para esta equipa nesta liga.</div>';
+
+      const est = data.estatisticas;
+      if (est && est.jogosAnalisados > 0){
+        document.getElementById('stats-content').innerHTML = `
+          <div class="stat-grid">
+            <div class="stat-box"><div class="val">${est.jogosAnalisados}</div><div class="label">Jogos analisados</div></div>
+            <div class="stat-box"><div class="val">${est.golosMarcados}</div><div class="label">Golos marcados</div></div>
+            <div class="stat-box"><div class="val">${est.golosSofridos}</div><div class="label">Golos sofridos</div></div>
+            <div class="stat-box"><div class="val">${(est.golosMarcados-est.golosSofridos)>=0?'+':''}${est.golosMarcados-est.golosSofridos}</div><div class="label">Diferença de golos</div></div>
+          </div>
+          <p class="empty-note" style="margin-top:12px;">Baseado nos últimos ${est.jogosAnalisados} jogos com resultado disponível, não na época inteira.</p>`;
+      } else {
+        document.getElementById('stats-content').innerHTML = '<div class="empty-note">Estatísticas não disponíveis.</div>';
+      }
+
+    } catch (err) {
+      document.getElementById('team-header').innerHTML = `<div class="empty-note">Não foi possível carregar: ${err.message}</div>`;
+    }
+  }
+
+  carregar();
+</script>
+  </div>
+</div>
+
+
+</body>
+</html>
