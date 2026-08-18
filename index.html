@@ -11,6 +11,9 @@
 <!-- APITO V2 — canonical shell/navigation (sidebar, topbar, bottom-nav). See assets/shell.css / assets/shell.js -->
 <link rel="stylesheet" href="assets/shell.css">
 <script src="assets/shell.js"></script>
+<!-- APITO V2 — canonical shared components (Pass 3A: MatchRow). See assets/components.css / assets/components.js -->
+<link rel="stylesheet" href="assets/components.css">
+<script src="assets/components.js"></script>
 <style>
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ background: var(--bg); color: var(--text-0); font-family:'Inter', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
@@ -31,21 +34,11 @@
   .search-box input{ background:none; border:none; outline:none; color: var(--text-0); font-size:16px; width:100%; }
   .search-box input::placeholder{ color: var(--text-2); }
 
-  /* Live carousel */
-  .hero-carousel{ display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; padding: 4px 0 12px; }
-  .hero-carousel::-webkit-scrollbar{ display:none; }
-  .hero-card{ scroll-snap-align:start; flex-shrink:0; width:min(86vw,320px); background: linear-gradient(90deg, #1E3A8A 0%, #172554 35%, #450A0A 65%, #7F1D1D 100%); border:1px solid var(--line-strong); border-radius:18px; padding:16px; cursor:pointer; transition: transform .15s, box-shadow .15s; color:#fff; }
-  .hero-card:hover{ transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
-  .hero-card .hero-teams-row .tname{ color:#fff; }
-  .hero-card .hero-teams-row .tscore{ color:#fff; }
-  .hero-card .hero-sub2{ color: rgba(255,255,255,0.6); }
-  .hero-live-tag{ display:inline-flex; align-items:center; gap:6px; background: var(--live); color:#fff; font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; padding:4px 10px; border-radius:100px; margin-bottom:12px; }
-  .hero-live-tag .dot{ width:5px; height:5px; border-radius:50%; background:#fff; animation: pulse 1.3s infinite; }
-  .hero-teams-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
-  .hero-teams-row .tname{ font-size:13px; font-weight:600; display:flex; align-items:center; gap:7px; }
-  .hero-crest{ width:18px; height:18px; border-radius:50%; object-fit:contain; flex-shrink:0; }
-  .hero-teams-row .tscore{ font-size:17px; font-weight:800; }
-  .hero-sub2{ font-size:11px; color: var(--text-2); margin-top:8px; }
+  /* Live carousel — hosts the editorial FeaturedMatch context (gradient
+     wrapper) from assets/components.css, each containing one canonical,
+     ungradiented Expanded MatchRow. The old .hero-card family
+     (hero-card/hero-teams-row/hero-crest/hero-sub2/hero-live-tag) is
+     retired — see Pass 3A migration report / correction 2. */
   @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   /* Day strip — chips circulares tipo calendário */
@@ -98,51 +91,18 @@
   .league-group-head .lg-name .crest{ width:22px; height:22px; border-radius:7px; background: var(--purple-dim); color: var(--purple); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; }
   .league-group-head .lg-country{ font-size:10.5px; color: var(--text-2); font-weight:500; }
 
-  .match-row{ display:grid; grid-template-columns:44px 1fr 32px; align-items:center; gap:12px; padding:13px 16px; border-bottom:1px solid var(--line); cursor:pointer; transition: background .12s, transform .12s; }
-  .match-row:last-child{ border-bottom:none; }
-  .match-row:hover{ background: var(--card-2); transform: translateX(2px); }
-  @media (max-width:460px){ .match-row{ grid-template-columns:36px 1fr 0; gap:8px; padding:12px; } .m-fav{ display:none; } }
-
-  .m-status{ display:flex; flex-direction:column; align-items:center; gap:4px; }
-  .m-status .min{ font-size:11.5px; font-weight:800; color: var(--live); }
-  .m-status .time{ font-size:12px; font-weight:700; color: var(--text-1); }
-  .m-status .ft{ font-size:10px; color: var(--text-2); font-weight:700; text-transform:uppercase; }
-  .m-status .ball{ width:6px; height:6px; border-radius:50%; background: var(--live); animation: pulse 1.3s infinite; }
-
-  .m-teams{ display:flex; flex-direction:column; gap:8px; min-width:0; }
-  .m-team{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .m-team .t-left{ display:flex; align-items:center; gap:9px; min-width:0; }
-  .team-link{ display:flex; flex-shrink:0; cursor:pointer; }
-  .crest-sm{ width:22px; height:22px; border-radius:50%; background: var(--card-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:800; color: var(--text-1); flex-shrink:0; }
-  .t-name{ font-size:13.5px; font-weight:500; color: var(--text-0); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .m-team.winner .t-name{ font-weight:700; }
-  .m-team.loser .t-name{ color: var(--text-1); font-weight:400; }
-  .t-score{ font-size:15px; font-weight:800; min-width:16px; text-align:right; }
-  .m-team.loser .t-score{ color: var(--text-2); }
-
-  .m-fav{ display:flex; align-items:center; justify-content:center; min-height:44px; }
-  .fav-star{ font-size:16px; color: var(--text-2); padding:12px; margin:-12px; border-radius:50%; }
-  .fav-star.active{ color: var(--purple); }
-  @keyframes favPop{ 0%{transform:scale(1);} 40%{transform:scale(1.4);} 100%{transform:scale(1);} }
-  .fav-star.pop{ animation: favPop .3s ease; }
-
-  .odds-row{ display:flex; gap:4px; margin-top:2px; }
-  .odds-chip{ font-size:9.5px; font-weight:700; color: var(--text-2); background: var(--card-2); border-radius:6px; padding:2px 6px; }
+  /* Match rows are now the canonical MatchRow component (Standard /
+     Expanded density) from assets/components.css — see Pass 3A. The
+     old .match-row/.m-status/.m-teams/.m-team/.t-name/.t-score/.m-fav/
+     .fav-star/.odds-row/.odds-chip family is retired. */
 
   /* Sidebar direita */
   .side-card{ background: var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; margin-bottom:16px; }
   .side-card h3{ font-size:14px; font-weight:700; margin-bottom:12px; }
 
-  .table-row{ display:grid; grid-template-columns: 4px 18px 1fr 22px 24px 22px 28px; align-items:center; gap:6px; padding:7px 2px; font-size:12px; }
-  .table-row.head{ color: var(--text-2); font-size:9px; text-transform:uppercase; letter-spacing:0.4px; font-weight:700; padding-bottom:8px; }
-  .zone-bar{ width:3px; height:20px; border-radius:2px; }
-  .zone-bar.z1{ background: var(--lime); }
-  .zone-bar.z2{ background: var(--blue); }
-  .zone-bar.z3{ background: var(--purple); }
-  .table-row .pos{ color: var(--text-2); font-weight:700; }
-  .table-row .club{ color:var(--text-0); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
-  .table-row .n{ text-align:center; color: var(--text-1); }
-  .table-row .pts{ text-align:center; font-weight:800; }
+  /* Standings table is now the canonical DataTable/StandingsTable
+     component (.dt-row/.dt-zone/...) shared in assets/components.css —
+     see Pass 3B. This also fixes the zone-color drift vs League/Team. */
 
   .top-scorer{ display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); }
   .top-scorer:last-child{ border-bottom:none; }
@@ -179,7 +139,7 @@
       <!-- Topbar — canonical markup rendered by assets/shell.js; Home renders search+favorites inside it -->
       <script>ApitoShell.renderTopbar();</script>
 
-      <div class="hero-carousel" id="hero-carousel" style="display:none;"></div>
+      <div class="mr-rail" id="hero-carousel" style="display:none;"></div>
 
       <div class="toolbar">
         <div class="date-picker-wrap">
@@ -262,37 +222,40 @@
   const setFavs = (arr) => localStorage.setItem(FAV_KEY, JSON.stringify(arr));
 
   function paintFavStars(){
-    document.querySelectorAll('.match-row').forEach(card => {
-      const teams = (card.dataset.teams || '').split(',');
-      const star = card.querySelector('.fav-star');
+    document.querySelectorAll('.mr[data-teams]').forEach(row => {
+      const teams = (row.dataset.teams || '').split(',');
+      const star = row.querySelector('.mr-fav');
       if (!star) return;
-      const favs = getFavs();
-      star.classList.toggle('active', teams.some(t => favs.includes(t)));
+      const isFav = teams.some(t => getFavs().includes(t));
+      star.classList.toggle('active', isFav);
+      star.setAttribute('aria-pressed', String(isFav));
     });
   }
 
   document.addEventListener('click', (e) => {
-    if (!e.target.classList.contains('fav-star')) return;
+    const star = e.target.closest('.mr-fav');
+    if (!star) return;
     e.stopPropagation();
-    const card = e.target.closest('.match-row');
-    const teams = (card.dataset.teams || '').split(',');
+    const row = star.closest('.mr[data-teams]');
+    if (!row) return;
+    const teams = (row.dataset.teams || '').split(',');
     let favs = getFavs();
     const already = teams.some(t => favs.includes(t));
     favs = already ? favs.filter(t => !teams.includes(t)) : [...new Set([...favs, ...teams])];
     setFavs(favs);
     paintFavStars();
-    e.target.classList.remove('pop');
-    void e.target.offsetWidth;
-    e.target.classList.add('pop');
+    star.classList.remove('pop');
+    void star.offsetWidth;
+    star.classList.add('pop');
   });
 
   let onlyFavs = false;
   function alternarFavoritos(){
     onlyFavs = !onlyFavs;
     const favs = getFavs();
-    document.querySelectorAll('.match-row').forEach(card => {
-      const teams = (card.dataset.teams || '').split(',');
-      card.style.display = (onlyFavs && !teams.some(t => favs.includes(t))) ? 'none' : 'grid';
+    document.querySelectorAll('.mr[data-teams]').forEach(row => {
+      const teams = (row.dataset.teams || '').split(',');
+      row.style.display = (onlyFavs && !teams.some(t => favs.includes(t))) ? 'none' : '';
     });
     [document.getElementById('fav-toggle'), document.getElementById('bn-favoritos'), document.getElementById('nav-favoritos')].filter(Boolean).forEach(el => {
       if (el) el.classList.toggle('active', onlyFavs);
@@ -304,38 +267,37 @@
 
   document.getElementById('search-input').addEventListener('input', (e) => {
     const termo = e.target.value.trim().toLowerCase();
-    document.querySelectorAll('.match-row').forEach(card => {
-      const teams = (card.dataset.teams || '').toLowerCase();
-      card.style.display = (!termo || teams.includes(termo)) ? 'grid' : 'none';
+    document.querySelectorAll('.mr[data-teams]').forEach(row => {
+      const teams = (row.dataset.teams || '').toLowerCase();
+      row.style.display = (!termo || teams.includes(termo)) ? '' : 'none';
     });
   });
 
-  function crestImg(id, alt, size=22){
-    if (!id) return `<span class="crest-sm">${iniciais(alt)}</span>`;
-    return `<img class="crest-sm" src="https://sports.bzzoiro.com/img/team/${id}/?bg=transparent" alt="${alt}" width="${size}" height="${size}" onerror="this.outerHTML='<span class=\\'crest-sm\\'>${iniciais(alt)}</span>'">`;
-  }
   function leagueCrestImg(id, alt){
     if (!id) return `<span class="crest">${iniciais(alt)}</span>`;
     return `<img class="crest" src="https://sports.bzzoiro.com/img/league/${id}/?bg=transparent" alt="${alt}" width="20" height="20" style="object-fit:contain;border-radius:7px;" onerror="this.outerHTML='<span class=\\'crest\\'>${iniciais(alt)}</span>'">`;
   }
   function iniciais(nome){ return (nome||'?').split(' ').map(p=>p[0]).join('').slice(0,3).toUpperCase(); }
 
-  function estadoCard(estado){
-    if (estado === '1H') return 'is-live';
-    if (estado === 'NS') return 'is-upcoming';
-    return '';
-  }
-  function statusHtml(j){
-    if (j.estado === '1H') return `<span class="ball"></span><span class="min" data-base-min="${j.minuto ?? 0}" data-rendered-at="${Date.now()}">${j.minuto ?? ''}'</span>`;
-    if (j.estado === 'NS'){
-      const hora = new Date(j.hora).toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
-      return `<span class="time">${hora}</span>`;
-    }
-    return `<span class="ft">FIM</span>`;
+  // ---- Canonical MatchRow adapter ----
+  // Maps this page's API shape onto the shared match object consumed by
+  // ApitoComponents.matchRow (assets/components.js) — see Pass 3A.
+  function paraMatchApito(j){
+    return {
+      id: j.id,
+      status: j.estado,
+      minute: j.minuto,
+      kickoff: j.hora,
+      home: { id: j.casa.id, name: j.casa.nome, goals: j.casa.golos },
+      away: { id: j.fora.id, name: j.fora.nome, goals: j.fora.golos },
+      odds: j.odds || null,
+      favoriteKey: `${j.casa.nome},${j.fora.nome}`
+    };
   }
 
+  // Live-minute ticking now targets the canonical component's status text.
   setInterval(() => {
-    document.querySelectorAll('.min[data-base-min]').forEach(el => {
+    document.querySelectorAll('.mr-status-text[data-base-min]').forEach(el => {
       const base = Number(el.dataset.baseMin);
       const desde = Date.now() - Number(el.dataset.renderedAt);
       const minutosPassados = Math.floor(desde / 60000);
@@ -344,28 +306,15 @@
   }, 15000);
 
   function cartaoJogoHtml(j){
-    const casaVence = (j.casa.golos ?? 0) > (j.fora.golos ?? 0);
-    const foraVence = (j.fora.golos ?? 0) > (j.casa.golos ?? 0);
-    const golosCasa = j.casa.golos === null ? '–' : j.casa.golos;
-    const golosFora = j.fora.golos === null ? '–' : j.fora.golos;
-    const odds = j.odds && (j.odds.casa || j.odds.empate || j.odds.fora)
-      ? `<div class="odds-row"><span class="odds-chip">${j.odds.casa ?? '-'}</span><span class="odds-chip">${j.odds.empate ?? '-'}</span><span class="odds-chip">${j.odds.fora ?? '-'}</span></div>` : '';
-    return `
-      <div class="match-row ${estadoCard(j.estado)}" data-teams="${j.casa.nome},${j.fora.nome}" onclick="window.location.href='detail.html?id=${j.id}'">
-        <div class="m-status">${statusHtml(j)}</div>
-        <div class="m-teams">
-          <div class="m-team ${casaVence ? 'winner' : (foraVence ? 'loser' : '')}">
-            <div class="t-left"><span class="team-link" onclick="event.stopPropagation(); window.location.href='team.html?id=${j.casa.id}'">${crestImg(j.casa.id, j.casa.nome)}</span><span class="t-name">${j.casa.nome}</span></div>
-            <span class="t-score">${golosCasa}</span>
-          </div>
-          <div class="m-team ${foraVence ? 'winner' : (casaVence ? 'loser' : '')}">
-            <div class="t-left"><span class="team-link" onclick="event.stopPropagation(); window.location.href='team.html?id=${j.fora.id}'">${crestImg(j.fora.id, j.fora.nome)}</span><span class="t-name">${j.fora.nome}</span></div>
-            <span class="t-score">${golosFora}</span>
-          </div>
-          ${odds}
-        </div>
-        <div class="m-fav"><span class="fav-star">★</span></div>
-      </div>`;
+    const match = paraMatchApito(j);
+    const density = (match.odds && (match.odds.casa || match.odds.empate || match.odds.fora)) ? 'expanded' : 'standard';
+    const html = ApitoComponents.matchRow(match, { density });
+    // Live-minute ticking hook (data-base-min/data-rendered-at), preserved
+    // from V1: only meaningful while the match is actually live.
+    if (j.estado === '1H') {
+      return html.replace('<span class="mr-status-text">', `<span class="mr-status-text" data-base-min="${j.minuto ?? 0}" data-rendered-at="${Date.now()}">`);
+    }
+    return html;
   }
 
   function renderJogos(jogos){
@@ -394,35 +343,31 @@
     const todosAoVivo = jogos.filter(j => j.estado === '1H');
     if (todosAoVivo.length){
       carousel.style.display = 'flex';
-      carousel.innerHTML = todosAoVivo.map(live => `
-        <div class="hero-card" onclick="window.location.href='detail.html?id=${live.id}'">
-          <div class="hero-live-tag"><span class="dot"></span>Em direto · ${live.minuto ?? ''}'</div>
-          <div class="hero-teams-row"><span class="tname"><img class="hero-crest" src="https://sports.bzzoiro.com/img/team/${live.casa.id}/?bg=transparent" alt="" onerror="this.style.display='none'">${live.casa.nome}</span><span class="tscore">${live.casa.golos ?? 0}</span></div>
-          <div class="hero-teams-row"><span class="tname"><img class="hero-crest" src="https://sports.bzzoiro.com/img/team/${live.fora.id}/?bg=transparent" alt="" onerror="this.style.display='none'">${live.fora.nome}</span><span class="tscore">${live.fora.golos ?? 0}</span></div>
-          <div class="hero-sub2">${live.liga}</div>
-        </div>`).join('');
+      carousel.innerHTML = todosAoVivo.map(live => {
+        const match = paraMatchApito(live);
+        match.meta = live.liga; // shown in Expanded's metadata line instead of odds
+        match.odds = null;
+        // Genuinely live matches earn editorial emphasis via the FeaturedMatch
+        // wrapper (gradient at the container level) — the MatchRow content
+        // inside stays the same canonical, ungradiented Expanded component
+        // used everywhere else. See Pass 3A correction 2.
+        const html = ApitoComponents.featuredMatch(match);
+        return html.replace('<span class="mr-status-text">', `<span class="mr-status-text" data-base-min="${live.minuto ?? 0}" data-rendered-at="${Date.now()}">`);
+      }).join('');
     } else {
       carousel.style.display = 'none';
       carousel.innerHTML = '';
     }
   }
 
+
   function renderClassificacao(classificacao){
     const card = document.getElementById('standings-card');
     if (!classificacao.length) return;
-    const linhas = classificacao.map(t => {
-      const zona = t.posicao <= 3 ? 'z1' : t.posicao <= 6 ? 'z2' : t.posicao <= 7 ? 'z3' : '';
-      return `
-      <div class="table-row">
-        <span class="zone-bar ${zona}"></span>
-        <span class="pos">${t.posicao}</span>
-        <span class="club" onclick="window.location.href='team.html?id=${t.equipaId}'">${t.equipa}</span>
-        <span class="n">${t.jogos}</span><span class="n">${t.saldo > 0 ? '+' + t.saldo : t.saldo}</span><span class="n">${t.vitorias}</span><span class="pts">${t.pontos}</span>
-      </div>`;
-    }).join('');
+    const linhas = classificacao.map(t => ApitoComponents.standingsRow(t)).join('');
     card.innerHTML = `
       <h3>Classificação</h3>
-      <div class="table-row head"><span></span><span>#</span><span>Equipa</span><span>J</span><span>DG</span><span>V</span><span>Pts</span></div>
+      ${ApitoComponents.standingsHeader()}
       ${linhas}`;
   }
 
@@ -697,7 +642,7 @@
     const filtro = new URLSearchParams(location.search).get('filtro');
     if (filtro !== 'ao-vivo' && filtro !== 'favoritos') return;
     const esperar = setInterval(() => {
-      if (document.querySelectorAll('.match-row').length || document.querySelector('.empty-note')){
+      if (document.querySelectorAll('.mr').length || document.querySelector('.empty-note')){
         clearInterval(esperar);
         if (filtro === 'ao-vivo') alternarAoVivo();
         if (filtro === 'favoritos') alternarFavoritos();

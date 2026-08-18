@@ -11,6 +11,9 @@
 <!-- APITO V2 — canonical shell/navigation (sidebar, topbar, bottom-nav). See assets/shell.css / assets/shell.js -->
 <link rel="stylesheet" href="assets/shell.css">
 <script src="assets/shell.js"></script>
+<!-- APITO V2 — canonical shared components. See assets/components.css / assets/components.js -->
+<link rel="stylesheet" href="assets/components.css">
+<script src="assets/components.js"></script>
 <style>
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ background: var(--bg); color: var(--text-0); font-family:'Inter', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
@@ -19,13 +22,16 @@
   .shell{ max-width:900px; margin:0 auto; padding:24px; } @media (max-width:640px){ .shell{ padding:14px; } }
   .back{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color: var(--text-1); margin-bottom:16px; }
 
-  .score-block{ position:relative; background: linear-gradient(90deg, #1E3A8A 0%, #172554 30%, #0D0B14 50%, #450A0A 70%, #7F1D1D 100%); border:1px solid var(--line-strong); border-radius:20px; padding:28px 20px 22px; text-align:center; margin-bottom:20px; color:#fff; overflow:hidden; }
-  .score-block .liga{ font-size:11px; font-weight:700; color: rgba(255,255,255,0.65); text-transform:uppercase; letter-spacing:0.8px; }
+  /* MatchHero — the Match Detail identity moment. Hero Gradient
+     (Section 3): full-intensity, used exactly once per screen, here
+     only. Display Score typography role for the score itself. */
+  .score-block{ position:relative; background: var(--gradient-hero); border-radius: var(--radius-2xl); padding: var(--space-7) var(--space-5) var(--space-5); text-align:center; margin-bottom:20px; color:#fff; overflow:hidden; }
+  .score-block .liga{ font-family: var(--type-eyebrow-family); font-size: var(--type-eyebrow-size); font-weight: var(--type-eyebrow-weight); letter-spacing: var(--type-eyebrow-tracking); text-transform: var(--type-eyebrow-case); color: rgba(255,255,255,0.65); }
   .score-teams-row{ display:flex; align-items:center; justify-content:center; gap:22px; margin-top:14px; }
   .score-team-crest{ display:flex; flex-direction:column; align-items:center; gap:8px; text-decoration:none; color:#fff; max-width:120px; }
   .score-team-crest img{ width:48px; height:48px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,0.08); }
-  .score-team-crest span{ font-size:12.5px; font-weight:700; line-height:1.2; }
-  .score-block .score{ font-size:52px; font-weight:900; flex-shrink:0; line-height:1; }
+  .score-team-crest span{ font-family: var(--type-entity-title-family); font-size:12.5px; font-weight:700; line-height:1.2; }
+  .score-block .score{ font-family: var(--type-display-score-family); font-size: clamp(44px,9vw,64px); font-weight: var(--type-display-score-weight); letter-spacing: var(--type-display-score-tracking); font-variant-numeric: tabular-nums lining-nums; flex-shrink:0; line-height:1; }
   .score-block .estado{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; margin-top:16px; padding:5px 13px; border-radius:100px; background: rgba(255,255,255,0.12); color:#fff; }
   .score-block .estado.live{ background: var(--live); color:#fff; }
   .score-block .estado.live .dot{ width:6px; height:6px; border-radius:50%; background:#fff; animation: pulse 1.3s infinite; }
@@ -36,11 +42,15 @@
 
   .card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
 
+  /* Event feed keeps its own left-edge home/away tint (a genuinely
+     serial, timestamped list benefits from per-row separation, per
+     the design system's EventRow entry) — everything else here now
+     draws on shared tokens instead of hardcoded hex. */
   .event-row{ display:flex; align-items:center; gap:12px; padding:9px 4px 9px 10px; border-bottom:1px solid var(--line); font-size:13px; border-left:3px solid transparent; }
-  .event-row.evento-casa{ border-left-color:#3B82F6; }
-  .event-row.evento-fora{ border-left-color:#EF4444; }
+  .event-row.evento-casa{ border-left-color: var(--blue); }
+  .event-row.evento-fora{ border-left-color: var(--red-stat); }
   .event-row:last-child{ border-bottom:none; }
-  .event-min{ font-weight:800; color: var(--lime); min-width:32px; }
+  .event-min{ font-family: var(--font-numeral); font-variant-numeric: tabular-nums; font-weight:800; color: var(--lime); min-width:32px; }
   .event-desc{ color: var(--text-1); flex:1; }
   .event-desc b{ color: var(--text-0); }
   .event-tag{ font-size:9.5px; font-weight:700; padding:3px 8px; border-radius:6px; background: var(--card-2); color: var(--text-2); text-transform:uppercase; letter-spacing:0.3px; }
@@ -53,20 +63,15 @@
   .lineup-card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
   .lineup-card h3{ font-size:13.5px; font-weight:700; margin-bottom:3px; }
   .lineup-card .formacao{ font-size:10.5px; color: var(--text-2); margin-bottom:10px; }
-  .player-row{ display:flex; align-items:center; gap:8px; font-size:12.5px; padding:5px 0; color: var(--text-1); cursor:pointer; }
-  .player-row .num{ width:20px; height:20px; border-radius:6px; background: rgba(91,109,248,0.14); color: var(--lime); font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .player-row .cap{ font-size:10px; color: var(--live); font-weight:800; margin-left:2px; }
+  /* Lineup players are now the canonical PlayerEntity list variant
+     (.pe-list) shared in assets/components.css — see Pass 3B. */
 
   .injury-row{ display:flex; justify-content:space-between; font-size:12.5px; padding:7px 0; color: var(--text-1); border-bottom:1px solid var(--line); }
   .injury-row:last-child{ border-bottom:none; }
   .injury-row .motivo{ color: var(--text-2); font-size:11px; }
 
-  .stat-row{ display:grid; grid-template-columns:42px 1fr 42px; align-items:center; gap:10px; padding:10px 2px; font-size:13px; }
-  .stat-row .val{ font-weight:800; text-align:center; }
-  .stat-row .label{ text-align:center; color: var(--text-2); font-size:10.5px; text-transform:uppercase; letter-spacing:0.4px; }
-  .stat-bar{ height:5px; border-radius:3px; background: var(--card-2); position:relative; overflow:hidden; margin-top:5px; grid-column:1/-1; display:flex; }
-  .stat-bar .fill-home{ background: var(--blue); height:100%; }
-  .stat-bar .fill-away{ background: var(--red-stat); height:100%; }
+  /* Stat comparison rows are now the canonical StatComparison
+     component (.stat-comp) shared in assets/components.css. */
 
   .momentum-chart{ display:flex; align-items:center; height:74px; gap:1px; }
   .momentum-bar{ flex:1; min-width:2px; background: var(--blue); align-self:flex-end; border-radius:1px 1px 0 0; }
@@ -90,7 +95,7 @@
   .shotmap-legend span{ display:inline-flex; align-items:center; gap:5px; }
   .shotmap-legend .dot{ width:9px; height:9px; border-radius:50%; }
 
-  .empty-note{ font-size:13px; color: var(--text-2); }
+  /* .empty-note is now canonical in assets/components.css */
   a:focus-visible, button:focus-visible, [tabindex]:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; border-radius:6px; }
   .breadcrumb{ font-size:12px; color: var(--text-2); margin-bottom:12px; }
   .breadcrumb a{ color: var(--text-1); }
@@ -213,18 +218,7 @@
 
       const estatisticas = data.estatisticas || [];
       document.getElementById('stats').innerHTML = estatisticas.length
-        ? estatisticas.map(s => {
-            const casaNum = parseFloat(s.casa) || 0, foraNum = parseFloat(s.fora) || 0;
-            const total = casaNum + foraNum || 1;
-            const pctCasa = Math.round((casaNum/total)*100);
-            return `
-              <div class="stat-row">
-                <span class="val">${s.casa}${s.sufixo}</span>
-                <span class="label">${s.label}</span>
-                <span class="val">${s.fora}${s.sufixo}</span>
-                <div class="stat-bar"><div class="fill-home" style="width:${pctCasa}%"></div><div class="fill-away" style="width:${100-pctCasa}%"></div></div>
-              </div>`;
-          }).join('')
+        ? estatisticas.map(s => ApitoComponents.statComparison(s)).join('')
         : '<div class="empty-note">Estatísticas não disponíveis para este jogo.</div>';
 
       const momentum = data.momentum || [];
@@ -259,7 +253,7 @@
           <div class="lineup-card">
             <h3>${eq.equipa}</h3>
             <div class="formacao">Formação: ${eq.formacao || '—'}</div>
-            ${eq.titulares.map(p => `<div class="player-row" onclick="window.location.href='player.html?id=${p.id}'"><span class="num">${p.numero ?? '-'}</span>${p.nome}${p.capitao ? '<span class="cap">C</span>' : ''}</div>`).join('')}
+            ${eq.titulares.map(p => ApitoComponents.playerEntity({ id: p.id, numero: p.numero, nome: p.nome, capitao: p.capitao }, { variant: 'list' })).join('')}
           </div>`).join('');
       } else {
         const motivo = data.lineupsStatus === 'predicted' ? 'ainda não há escalação oficial'

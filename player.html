@@ -13,6 +13,9 @@
 <!-- APITO V2 — canonical shell/navigation (sidebar, topbar, bottom-nav). See assets/shell.css / assets/shell.js -->
 <link rel="stylesheet" href="assets/shell.css">
 <script src="assets/shell.js"></script>
+<!-- APITO V2 — canonical shared components. See assets/components.css / assets/components.js -->
+<link rel="stylesheet" href="assets/components.css">
+<script src="assets/components.js"></script>
 <style>
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ background: var(--bg); color: var(--text-0); font-family:'Inter', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
@@ -21,10 +24,8 @@
   .shell{ max-width:860px; margin:0 auto; padding:24px; } @media (max-width:640px){ .shell{ padding:14px; } }
   .back{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color: var(--text-1); margin-bottom:16px; }
 
-  .player-header{ display:flex; align-items:center; gap:16px; margin-bottom:20px; background: linear-gradient(120deg, #1E3A8A 0%, #172554 55%, #0D0B14 100%); border:1px solid var(--line-strong); border-radius:20px; padding:22px; color:#fff; }
-  .player-header img, .player-header .fallback{ width:72px; height:72px; border-radius:50%; background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); object-fit:cover; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:22px; flex-shrink:0; }
-  .player-header .name{ font-size: clamp(19px,4vw,25px); font-weight:800; color:#fff; }
-  .player-header .meta{ font-size:12px; color: rgba(255,255,255,0.65); margin-top:5px; }
+  /* .player-header is now the canonical EntityHero component (Entity
+     Gradient) shared in assets/components.css — see Pass 3B. */
 
   .info-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap:10px; margin-bottom:20px; }
   .info-box{ background: var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
@@ -38,14 +39,14 @@
   .stat-row{ display:grid; grid-template-columns:1fr 40px 40px 40px 44px; gap:8px; align-items:center; padding:9px 4px; border-bottom:1px solid var(--line); font-size:12.5px; }
   .stat-row:last-child{ border-bottom:none; }
   .stat-row.head{ color: var(--text-2); font-size:9.5px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
-  .stat-row .n{ text-align:center; }
-  .stat-row .rating{ text-align:center; color: var(--lime); font-weight:700; }
+  .stat-row .n{ text-align:center; font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
+  .stat-row .rating{ text-align:center; color: var(--lime); font-weight:700; font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
 
   .transfer-row{ display:flex; align-items:center; justify-content:space-between; padding:9px 4px; border-bottom:1px solid var(--line); font-size:12.5px; }
   .transfer-row:last-child{ border-bottom:none; }
   .transfer-row .fee{ font-weight:700; color: var(--lime); }
 
-  .empty-note{ font-size:13px; color: var(--text-2); padding:10px 0; }
+  /* .empty-note is now canonical in assets/components.css */
   a:focus-visible, button:focus-visible, [tabindex]:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; border-radius:6px; }
   .breadcrumb{ font-size:12px; color: var(--text-2); margin-bottom:12px; }
   .breadcrumb a{ color: var(--text-1); }
@@ -106,9 +107,19 @@
       document.getElementById('breadcrumb').innerHTML = j.equipaAtualId
         ? `<a href="index.html">Início</a> / <a href="team.html?id=${j.equipaAtualId}">${j.equipaAtual || 'Equipa'}</a> / ${j.nome || 'Jogador'}`
         : `<a href="index.html">Início</a> / ${j.nome || 'Jogador'}`;
+
+      const estatisticas = data.estatisticas || [];
+      // Headline stat: main competition (most matches played) golos, shown
+      // as a pull-out number in the header — brings Player to visual parity
+      // with Team/League headers, per the design system's Player screen.
+      const principal = estatisticas.slice().sort((a,b) => (b.jogos||0) - (a.jogos||0))[0];
+      const headline = principal && principal.golos != null
+        ? `<div class="eh-stat"><div class="value">${principal.golos}</div><div class="label">Golos</div></div>` : '';
+
       document.getElementById('player-header').innerHTML = `
         <img src="https://sports.bzzoiro.com/img/player/${j.id}/?bg=transparent" alt="${j.nome}" onerror="this.outerHTML='<div class=\\'fallback\\'>${(j.nome||'?').slice(0,2).toUpperCase()}</div>'">
-        <div><div class="name">${j.nome || 'Jogador'}</div><div class="meta">${j.equipaAtual?j.equipaAtual:''}${j.posicao?' · '+j.posicao:''}</div></div>`;
+        <div><div class="name">${j.nome || 'Jogador'}</div><div class="meta">${j.equipaAtual?j.equipaAtual:''}${j.posicao?' · '+j.posicao:''}</div></div>
+        ${headline}`;
 
       const infos = [
         ['Nacionalidade', j.nacionalidade], ['Posição', j.posicao],
@@ -118,7 +129,6 @@
       document.getElementById('info-grid').innerHTML = infos.length
         ? infos.map(([label,val]) => `<div class="info-box"><div class="val">${val}</div><div class="label">${label}</div></div>`).join('') : '';
 
-      const estatisticas = data.estatisticas || [];
       document.getElementById('stats-content').innerHTML = estatisticas.length
         ? `<div class="stat-row head"><span>Competição</span><span class="n">J</span><span class="n">G</span><span class="n">A</span><span class="n">Rating</span></div>
            ${estatisticas.map(s => `<div class="stat-row"><span>${s.competicao||'—'}</span><span class="n">${s.jogos??'-'}</span><span class="n">${s.golos??'-'}</span><span class="n">${s.assistencias??'-'}</span><span class="rating">${s.rating??'-'}</span></div>`).join('')}`

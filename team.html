@@ -11,6 +11,9 @@
 <!-- APITO V2 — canonical shell/navigation (sidebar, topbar, bottom-nav). See assets/shell.css / assets/shell.js -->
 <link rel="stylesheet" href="assets/shell.css">
 <script src="assets/shell.js"></script>
+<!-- APITO V2 — canonical shared components (Pass 3A: MatchRow). See assets/components.css / assets/components.js -->
+<link rel="stylesheet" href="assets/components.css">
+<script src="assets/components.js"></script>
 <style>
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ background: var(--bg); color: var(--text-0); font-family:'Inter', sans-serif; min-height:100vh; -webkit-font-smoothing:antialiased; }
@@ -19,10 +22,8 @@
   .shell{ max-width:1040px; margin:0 auto; padding:24px; } @media (max-width:640px){ .shell{ padding:14px; } }
   .back{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color: var(--text-1); margin-bottom:16px; }
 
-  .team-header{ display:flex; align-items:center; gap:16px; margin-bottom:20px; background: linear-gradient(120deg, #1E3A8A 0%, #172554 55%, #0D0B14 100%); border:1px solid var(--line-strong); border-radius:20px; padding:22px; color:#fff; }
-  .team-header img, .team-header .crest-fallback{ width:60px; height:60px; border-radius:16px; background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); object-fit:contain; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:19px; flex-shrink:0; }
-  .team-header .name{ font-size: clamp(19px,4vw,25px); font-weight:800; color:#fff; }
-  .team-header .country{ font-size:11px; color: rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+  /* .team-header is now the canonical EntityHero component (Entity
+     Gradient) shared in assets/components.css — see Pass 3B. */
 
   .tabs{ display:flex; gap:22px; overflow-x:auto; scrollbar-width:none; padding-bottom:14px; margin-bottom:18px; border-bottom:1px solid var(--line); position:sticky; top:0; background: var(--bg); z-index:10; padding-top:6px; }
   .tab-content{ animation: fadeIn .18s ease; }
@@ -43,49 +44,26 @@
 
   .card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:8px 14px; }
 
-  .match-row{ display:flex; align-items:center; justify-content:space-between; padding:11px 4px 11px 10px; border-bottom:1px solid var(--line); font-size:13.5px; border-left:3px solid transparent; }
-  .match-row.match-casa{ border-left-color:#3B82F6; }
-  .match-row.match-fora{ border-left-color:#EF4444; }
-  .match-row:last-child{ border-bottom:none; }
-  .match-row .score{ font-weight:800; }
-
-  .zone-bar{ width:3px; height:20px; border-radius:2px; }
-  .zone-bar.z1{ background: var(--blue); }
-  .zone-bar.z2{ background:#3B82F6; }
-  .zone-bar.z3{ background:#14B8A6; }
-  .table-row{ display:grid; grid-template-columns:4px 18px 1fr 22px 24px 22px 28px; align-items:center; gap:6px; padding:8px 2px; font-size:12.5px; border-bottom:1px solid var(--line); }
-  .table-row:last-child{ border-bottom:none; }
-  .table-row.head{ color: var(--text-2); font-size:9px; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
-  .table-row.self{ background: rgba(91,109,248,0.10); border-radius:8px; font-weight:700; }
-  .table-row .pos{ color: var(--text-2); font-weight:700; }
-  .table-row .n{ text-align:center; color: var(--text-1); }
-  .table-row .pts{ text-align:center; font-weight:800; }
+  /* Match rows are now the canonical Compact MatchRow component from
+     assets/components.css — see Pass 3A. The old .match-row/.match-casa/
+     .match-fora/.score family is retired (home/away-perspective color
+     is preserved via .mr--persp-home/.mr--persp-away). Standings
+     (.dt-row), squad (.pe-grid), stats (.stat-strip), and filters
+     (.chip) are also now canonical shared components — see Pass 3B. */
 
   .squad-group-title{ font-size:11px; font-weight:700; color: var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin:16px 0 8px; }
   .squad-group-title:first-child{ margin-top:0; }
-  .squad-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
-  .player-card{ background: var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; cursor:pointer; }
-  .player-card .num{ font-weight:800; color: var(--lime); font-size:12px; }
-  .player-card .nome{ font-size:13px; font-weight:600; margin-top:4px; }
-  .player-card .pais{ font-size:10.5px; color: var(--text-2); margin-top:2px; }
 
   .top-player-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 4px; border-bottom:1px solid var(--line); font-size:13px; }
   .top-player-row:last-child{ border-bottom:none; }
   .top-player-row .goals{ font-weight:800; color: var(--lime); }
 
-  .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
-  .stat-box{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; text-align:center; }
-  .stat-box .val{ font-size:28px; font-weight:900; color: var(--lime); }
-  .stat-box .label{ font-size:11px; color: var(--text-2); margin-top:4px; }
-
   .filter-pills{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
   .filter-pills::-webkit-scrollbar{ display:none; }
-  .filter-pill{ appearance:none; -webkit-appearance:none; flex-shrink:0; padding:7px 13px; border-radius:100px; background: var(--card); border:1px solid var(--line); font-size:11.5px; font-weight:600; color: var(--text-1); white-space:nowrap; cursor:pointer; }
-  .filter-pill.active{ background: var(--white); color: var(--bg); border-color:transparent; }
   .round-group-title{ font-size:11px; font-weight:700; color: var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin:14px 0 6px; }
   .round-group-title:first-child{ margin-top:0; }
 
-  .empty-note{ font-size:13px; color: var(--text-2); padding:10px 0; }
+  /* .empty-note is now canonical in assets/components.css */
 
   /* Shell/navigation (sidebar, topbar chrome, bottom-nav) now lives in
      assets/shell.css, shared by all five pages — see Pass 2. */
@@ -130,9 +108,9 @@
 
   <div class="tab-content" id="tab-matches">
     <div class="filter-pills" id="matches-view-filter">
-      <button class="filter-pill active" data-view="date">Por data</button>
-      <button class="filter-pill" data-view="round">Por jornada</button>
-      <button class="filter-pill" data-view="team">Por adversário</button>
+      <button class="chip active" data-view="date">Por data</button>
+      <button class="chip" data-view="round">Por jornada</button>
+      <button class="chip" data-view="team">Por adversário</button>
     </div>
     <div class="card" id="matches-content"><div class="empty-note">A carregar...</div></div>
   </div>
@@ -144,7 +122,7 @@
 
   <div class="tab-content" id="tab-squad">
     <div class="filter-pills" id="squad-position-filter">
-      <button class="filter-pill active" data-pos="Todos">Todos</button>
+      <button class="chip active" data-pos="Todos">Todos</button>
     </div>
     <div id="squad-content"><div class="empty-note">A carregar...</div></div>
   </div>
@@ -177,13 +155,22 @@
     });
   });
 
+  // Canonical Compact MatchRow (assets/components.js) — this list has no
+  // team IDs either, same crest/link fallback as league.html. The
+  // home/away-perspective left-edge color from V1 (match-casa/match-fora)
+  // is preserved via the optional sidePerspective field.
   function linhaJogo(j){
-    const data = new Date(j.data).toLocaleDateString('pt-PT', { day:'2-digit', month:'short' });
     const temResultado = j.golosCasa !== null && j.golosCasa !== undefined;
-    const golos = temResultado ? `${j.golosCasa} - ${j.golosFora}` : data;
     const casaEQ = eq && j.casa === eq.nome;
-    const ladoClasse = casaEQ ? 'match-casa' : 'match-fora';
-    return `<div class="match-row ${ladoClasse}"><span>${j.casa} vs ${j.fora}</span><span class="score">${golos}</span></div>`;
+    const match = {
+      id: j.id,
+      status: temResultado ? 'FT' : 'NS',
+      kickoff: j.data,
+      home: { name: j.casa, goals: temResultado ? j.golosCasa : null },
+      away: { name: j.fora, goals: temResultado ? j.golosFora : null },
+      sidePerspective: casaEQ ? 'home' : 'away'
+    };
+    return ApitoComponents.matchRow(match, { density: 'compact' });
   }
 
   let eq = null;
@@ -231,9 +218,9 @@
         }
       }
       renderMatchesView('date');
-      document.querySelectorAll('#matches-view-filter .filter-pill').forEach(btn => {
+      document.querySelectorAll('#matches-view-filter .chip').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('#matches-view-filter .filter-pill').forEach(b=>b.classList.remove('active'));
+          document.querySelectorAll('#matches-view-filter .chip').forEach(b=>b.classList.remove('active'));
           btn.classList.add('active');
           renderMatchesView(btn.dataset.view);
         });
@@ -242,14 +229,8 @@
       if (data.nomeLiga) document.getElementById('standings-title').textContent = `Classificação · ${data.nomeLiga}`;
       const classificacao = data.classificacao || [];
       if (classificacao.length){
-        const linhas = classificacao.map(t => {
-          const zona = t.posicao<=3 ? 'z1' : t.posicao<=6 ? 'z2' : t.posicao<=7 ? 'z3' : '';
-          return `<div class="table-row ${String(t.equipaId)===String(eq.id)?'self':''}">
-            <span class="zone-bar ${zona}"></span><span class="pos">${t.posicao}</span><span>${t.equipa}</span>
-            <span class="n">${t.jogos}</span><span class="n">${t.saldo>0?'+'+t.saldo:t.saldo}</span><span class="n">${t.vitorias}</span><span class="pts">${t.pontos}</span>
-          </div>`;
-        }).join('');
-        document.getElementById('standings-table').innerHTML = `<div class="table-row head"><span></span><span>#</span><span>Equipa</span><span>J</span><span>DG</span><span>V</span><span>Pts</span></div>${linhas}`;
+        const linhas = classificacao.map(t => ApitoComponents.standingsRow(t, { self: String(t.equipaId) === String(eq.id) })).join('');
+        document.getElementById('standings-table').innerHTML = `${ApitoComponents.standingsHeader()}${linhas}`;
       } else {
         document.getElementById('standings-table').innerHTML = '<div class="empty-note">Classificação não disponível.</div>';
       }
@@ -261,18 +242,15 @@
         document.getElementById('squad-content').innerHTML = chaves.length
           ? chaves.map(g => `
             <div class="squad-group-title">${g}</div>
-            <div class="squad-grid">${grupos[g].map(p => `
-              <div class="player-card" onclick="window.location.href='player.html?id=${p.id}'">
-                <div class="num">${p.numero ?? '-'}</div><div class="nome">${p.nome}</div><div class="pais">${p.pais || ''}</div>
-              </div>`).join('')}</div>`).join('')
+            <div class="pe-grid">${grupos[g].map(p => ApitoComponents.playerEntity(p, { variant: 'grid' })).join('')}</div>`).join('')
           : '<div class="empty-note">Plantel não disponível.</div>';
       }
       const filterContainer = document.getElementById('squad-position-filter');
-      filterContainer.innerHTML = ['Todos', ...nomesGrupos].map((g,i) => `<button class="filter-pill ${i===0?'active':''}" data-pos="${g}">${g}</button>`).join('');
+      filterContainer.innerHTML = ['Todos', ...nomesGrupos].map((g,i) => ApitoComponents.chip(g, { active: i===0, dataAttrs: ` data-pos="${g}"` })).join('');
       renderSquad('Todos');
-      filterContainer.querySelectorAll('.filter-pill').forEach(btn => {
+      filterContainer.querySelectorAll('.chip').forEach(btn => {
         btn.addEventListener('click', () => {
-          filterContainer.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+          filterContainer.querySelectorAll('.chip').forEach(b=>b.classList.remove('active'));
           btn.classList.add('active');
           renderSquad(btn.dataset.pos);
         });
@@ -285,14 +263,15 @@
 
       const est = data.estatisticas;
       if (est && est.jogosAnalisados > 0){
-        document.getElementById('stats-content').innerHTML = `
-          <div class="stat-grid">
-            <div class="stat-box"><div class="val">${est.jogosAnalisados}</div><div class="label">Jogos analisados</div></div>
-            <div class="stat-box"><div class="val">${est.golosMarcados}</div><div class="label">Golos marcados</div></div>
-            <div class="stat-box"><div class="val">${est.golosSofridos}</div><div class="label">Golos sofridos</div></div>
-            <div class="stat-box"><div class="val">${(est.golosMarcados-est.golosSofridos)>=0?'+':''}${est.golosMarcados-est.golosSofridos}</div><div class="label">Diferença de golos</div></div>
-          </div>
-          <p class="empty-note" style="margin-top:12px;">Baseado nos últimos ${est.jogosAnalisados} jogos com resultado disponível, não na época inteira.</p>`;
+        const diff = est.golosMarcados - est.golosSofridos;
+        document.getElementById('stats-content').innerHTML =
+          ApitoComponents.statStrip([
+            { value: est.jogosAnalisados, label: 'Jogos analisados' },
+            { value: est.golosMarcados, label: 'Golos marcados' },
+            { value: est.golosSofridos, label: 'Golos sofridos' },
+            { value: (diff >= 0 ? '+' : '') + diff, label: 'Diferença de golos' }
+          ]) +
+          `<p class="empty-note" style="margin-top:12px;">Baseado nos últimos ${est.jogosAnalisados} jogos com resultado disponível, não na época inteira.</p>`;
       } else {
         document.getElementById('stats-content').innerHTML = '<div class="empty-note">Estatísticas não disponíveis.</div>';
       }

@@ -1,0 +1,399 @@
+/* ============================================================
+   APITO V2 — SHARED COMPONENTS
+   Pass 3 of APITO_DESIGN_SYSTEM_V2.md, Section 16.
+
+   Canonical, single-source styling for reusable content
+   components — separate from assets/foundation.css (tokens
+   only) and assets/shell.css (navigation chrome only). This
+   file is where StandingsTable, PlayerEntity, Chip, EmptyState
+   and Skeleton will also live once their passes begin (3B/3C).
+
+   PASS 3A SCOPE: MatchRow only. One canonical component with
+   three density variants — Compact / Standard / Expanded — as
+   defined in Section 5 of the design system. MatchRow is a
+   UTILITY/DATA moment: scan speed first, decoration last.
+   ============================================================ */
+
+/* ---------- Shared leaves (sized per density below) ---------- */
+.mr{ cursor:pointer; }
+.mr-crest{
+  flex-shrink:0; border-radius:50%;
+  background: var(--surface-data);
+  border:1px solid var(--border-subtle);
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  font-family: var(--font-interface); font-weight:800; color: var(--text-secondary);
+}
+.mr-crest img{ width:100%; height:100%; object-fit:cover; display:block; }
+.mr-name{
+  font-family: var(--type-row-primary-family);
+  font-weight: var(--type-row-primary-weight);
+  color: var(--text-primary);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+}
+.mr-score{
+  font-family: var(--font-numeral);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-weight:700;
+  text-align:right;
+}
+.mr-status{ display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; }
+.mr-status-text{
+  font-family: var(--type-metadata-family);
+  font-weight:700;
+  color: var(--text-secondary);
+  text-transform:uppercase;
+}
+.mr-status-dot{ width:6px; height:6px; border-radius:50%; background: var(--status-live); }
+.mr--live .mr-status-dot{ animation: mr-pulse var(--duration-pulse) infinite; }
+.mr--live .mr-status-text{ color: var(--status-live); }
+.mr--ht .mr-status-dot{ background: var(--status-live); } /* present, not pulsing — see Pass 3A status treatments */
+.mr--ht .mr-status-text{ color: var(--status-live); }
+.mr--postponed .mr-status-text{ color: var(--status-caution); }
+.mr--scheduled .mr-status-text,
+.mr--finished .mr-status-text,
+.mr--cancelled .mr-status-text{ color: var(--text-secondary); }
+.mr--cancelled .mr-score{ color: var(--text-tertiary); text-decoration: line-through; }
+@keyframes mr-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
+
+/* Favorite control — explicit, 44x44 hit area regardless of icon size,
+   never a gesture. Same control shape used by Standard and Expanded. */
+.mr-fav{
+  flex-shrink:0;
+  width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  border:none; background:none; color: var(--text-tertiary); cursor:pointer;
+  border-radius:50%;
+}
+.mr-fav svg{ width:16px; height:16px; }
+.mr-fav:hover{ color: var(--text-secondary); }
+.mr-fav.active{ color: var(--accent-purple); }
+@keyframes mr-fav-pop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.4); } 100%{ transform:scale(1); } }
+.mr-fav.pop{ animation: mr-fav-pop var(--duration-base) var(--ease-standard); }
+.mr-fav:focus-visible{ outline:2px solid var(--accent-lime); outline-offset:2px; }
+
+/* ============================================================
+   COMPACT
+   Max scanning efficiency. Single line, mirrored crest-name-
+   score-name-crest layout, no favorite, no metadata. Used for
+   dense fixture/result lists (Team, League).
+   ============================================================ */
+.mr--compact{
+  display:grid;
+  grid-template-columns: minmax(38px,auto) 1fr auto 1fr auto;
+  align-items:center;
+  column-gap: var(--space-2);
+  min-height:36px;
+  padding: var(--space-1) var(--space-2);
+  text-decoration:none;
+  border-left: 2px solid transparent;
+}
+/* The 5th column only exists visually when a .mr-fav button is actually
+   present (favoriting is a context capability, not a density rule — see
+   design system Section 5): with no favorite, the row simply has 4
+   children and the trailing auto-sized column takes no space, so
+   alignment of status/teams/score is identical with or without it. */
+/* Optional: when a Compact row is shown from a specific team's own
+   fixture list (Team page), the left edge can indicate whether that
+   fixture was home or away for the viewed team — preserved from V1's
+   team.html behavior. Declared before the live/HT rule below so a
+   currently-live match's status color always takes precedence. */
+.mr--compact.mr--persp-home{ border-left-color: var(--status-home); }
+.mr--compact.mr--persp-away{ border-left-color: var(--status-away); }
+.mr--compact.mr--live,
+.mr--compact.mr--ht{ border-left-color: var(--status-live); }
+.mr--compact:hover{ background: var(--surface-subtle); }
+.mr--compact .mr-status-text{ font-size:10px; }
+.mr--compact .mr-side{ display:flex; align-items:center; gap:6px; min-width:0; }
+.mr--compact .mr-side--home{ justify-content:flex-end; }
+.mr--compact .mr-side--home .mr-name{ text-align:right; }
+.mr--compact .mr-side--away{ justify-content:flex-start; }
+.mr--compact .mr-crest{ width:16px; height:16px; font-size:6.5px; }
+.mr--compact .mr-name{ font-size:12.5px; font-weight:500; }
+.mr--compact .mr-score{ font-size:13px; min-width:44px; color: var(--text-primary); }
+
+/* ============================================================
+   STANDARD
+   Default Apito match presentation. Two stacked team lines,
+   crest + name + score per line, explicit favorite. No
+   metadata — see Expanded for that.
+   ============================================================ */
+.mr--standard,
+.mr--expanded{
+  display:grid;
+  grid-template-columns: 40px 1fr 44px;
+  align-items:center;
+  column-gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-bottom:1px solid var(--border-subtle);
+}
+.mr--standard:last-child,
+.mr--expanded:last-child{ border-bottom:none; }
+.mr--standard:hover,
+.mr--expanded:hover{ background: var(--surface-subtle); }
+
+.mr--standard .mr-status-text,
+.mr--expanded .mr-status-text{ font-size:11px; }
+.mr--standard .mr-status-text.mr-status-time,
+.mr--expanded .mr-status-text.mr-status-time{ text-transform:none; font-weight:600; }
+
+.mr-teams{ display:flex; flex-direction:column; gap: var(--space-2); min-width:0; }
+.mr-team{ display:flex; align-items:center; justify-content:space-between; gap: var(--space-2); }
+.mr-side{ display:flex; align-items:center; gap:9px; min-width:0; text-decoration:none; }
+.mr-team--winner .mr-name{ font-weight:700; }
+.mr-team--loser .mr-name{ color: var(--text-secondary); font-weight:400; }
+.mr-team--loser .mr-score{ color: var(--text-tertiary); }
+
+.mr--standard .mr-crest,
+.mr--expanded .mr-crest{ width:22px; height:22px; font-size:8.5px; }
+.mr--standard .mr-name,
+.mr--expanded .mr-name{ font-size:13.5px; }
+.mr--standard .mr-score,
+.mr--expanded .mr-score{ font-size:15px; font-weight:800; min-width:18px; }
+
+/* Expanded: same shape as Standard, larger crest, plus a metadata
+   line, and a Data Surface background — the one MatchRow density
+   allowed to sit on a surface rather than flat canvas, since it is
+   functioning as a small promoted moment, not a pure data row
+   (Section 5/6 of the design system). Never used merely to add
+   decoration — only when there is real contextual content. This is
+   a flat surface only: MatchRow never owns a gradient at any density
+   — that emphasis, when genuinely warranted, belongs to the separate
+   FeaturedMatch wrapper below, not to Expanded itself. */
+.mr--expanded{
+  background: var(--surface-data);
+  border: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-2);
+}
+.mr--expanded:last-child{ margin-bottom:0; }
+.mr--expanded .mr-crest{ width:26px; height:26px; font-size:9.5px; }
+.mr-meta{
+  display:flex; align-items:center; gap: var(--space-2);
+  font-family: var(--type-metadata-family);
+  font-size: var(--type-metadata-size);
+  color: var(--text-secondary);
+  margin-top:2px;
+}
+.mr-meta .mr-odds{
+  font-weight:700; color: var(--text-secondary);
+  background: var(--surface-elevated);
+  border-radius: var(--radius-sm);
+  padding:2px 6px;
+  font-size:9.5px;
+}
+
+/* Horizontal carousel host — layout only. Hosts FeaturedMatch wrappers
+   (below), each containing one canonical Expanded MatchRow. */
+.mr-rail{ display:flex; gap: var(--space-2); overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; padding: 4px 2px 10px; }
+.mr-rail::-webkit-scrollbar{ display:none; }
+.mr-rail .featured-match{ scroll-snap-align:start; flex-shrink:0; width:min(84vw,340px); }
+
+/* ============================================================
+   FEATURED MATCH CONTEXT — NOT part of the MatchRow component.
+   Editorial container for a genuinely exceptional live/featured
+   match (Home's live rail). Uses the Entity Gradient tier — the
+   repeatable, quieter gradient already used more than once per
+   screen on Team/League/Player — rather than Hero Gradient, which
+   stays reserved for Match Detail's single score-block moment
+   (Section 3). The Expanded MatchRow placed inside is completely
+   unmodified: same markup, alignment, favorite control and status
+   semantics as any other Expanded row. Editorial emphasis is added
+   only here, at the container level, via the gradient surface and a
+   scoped light-text override (the gradient is dark regardless of
+   theme, so contained text is forced light within this wrapper only
+   — MatchRow's own default colors are never touched).
+   ============================================================ */
+.featured-match{
+  background: var(--gradient-entity);
+  border-radius: var(--radius-2xl);
+  padding: 2px;
+}
+/* The inner Expanded row's own flat surface is suppressed here so the
+   wrapper's gradient shows through instead of a card-inside-a-card. */
+.featured-match .mr--expanded{
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-2xl);
+  margin-bottom: 0;
+}
+.featured-match .mr-status-text{ color: rgba(255,255,255,.72); }
+.featured-match.mr--live .mr-status-text,
+.featured-match .mr--live .mr-status-text{ color: #fff; }
+.featured-match .mr-name{ color: #fff; }
+.featured-match .mr-team--loser .mr-name{ color: rgba(255,255,255,.62); font-weight:400; }
+.featured-match .mr-score{ color: #fff; }
+.featured-match .mr-team--loser .mr-score{ color: rgba(255,255,255,.5); }
+.featured-match .mr-crest{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.28); color: #fff; }
+.featured-match .mr-meta{ color: rgba(255,255,255,.68); }
+.featured-match .mr-meta .mr-odds{ background: rgba(255,255,255,.14); color: #fff; }
+.featured-match .mr-fav{ color: rgba(255,255,255,.75); }
+.featured-match .mr-fav:hover{ color: #fff; }
+.featured-match .mr-fav.active{ color: var(--accent-purple); }
+
+/* Focus (row itself is keyboard-operable where it isn't already a
+   native <a>, e.g. Standard/Expanded) */
+.mr[role="link"]:focus-visible{ outline:2px solid var(--accent-lime); outline-offset:-2px; border-radius: var(--radius-sm); }
+.mr--compact:focus-visible{ outline:2px solid var(--accent-lime); outline-offset:-2px; border-radius: var(--radius-sm); }
+
+/* ---------- Responsive ----------
+   Compact-mobile: metadata (Expanded's .mr-meta) is the first
+   thing to reduce — never the favorite control or score
+   alignment. Long names already truncate via ellipsis above at
+   every width; nothing here needs to change that. */
+@media (max-width:379px){
+  .mr-meta{ font-size:9.5px; gap: var(--space-1); }
+  .mr-meta .mr-odds{ padding:1px 5px; }
+}
+
+/* ============================================================
+   DATA TABLE / STANDINGS TABLE
+   Canonical zone colors, used identically everywhere a league
+   table appears (fixes the V1 audit's zone-bar color drift).
+   UTILITY/DATA — flat, no card wrapper, tabular numerals.
+   ============================================================ */
+.dt-row{
+  display:grid; grid-template-columns:4px 18px 1fr 22px 24px 22px 28px;
+  align-items:center; gap:6px; padding:8px 2px;
+  border-bottom:1px solid var(--border-subtle);
+}
+.dt-row:last-child{ border-bottom:none; }
+.dt-row.head{
+  color: var(--text-tertiary); font-size:9px; text-transform:uppercase;
+  letter-spacing:.05em; font-weight:700; border-bottom:none; padding-bottom:8px;
+}
+.dt-row.self{ background: var(--accent-purple-dim); border-radius: var(--radius-sm); font-weight:700; }
+.dt-zone{ width:3px; height:20px; border-radius:2px; background:transparent; }
+.dt-zone.z-qualification{ background: var(--zone-qualification); }
+.dt-zone.z-secondary{ background: var(--zone-secondary); }
+.dt-zone.z-caution{ background: var(--zone-caution); }
+.dt-zone.z-relegation{ background: var(--zone-relegation); }
+.dt-pos{ color: var(--text-tertiary); font-weight:700; font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
+.dt-club{ color: var(--text-primary); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; min-width:0; }
+.dt-n{ text-align:center; color: var(--text-secondary); font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
+.dt-pts{ text-align:center; font-weight:800; font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   ENTITY HERO — Team / League / Player identity headers.
+   Quiet Entity Gradient tier (Section 3): repeatable, three-stop,
+   never red — reserved distinction from MatchHero's Hero Gradient.
+   EDITORIAL/IDENTITY.
+   ============================================================ */
+.entity-hero,
+.team-header,
+.league-header,
+.player-header{
+  display:flex; align-items:center; gap:16px;
+  margin-bottom:20px;
+  background: var(--gradient-entity);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  color:#fff;
+}
+.team-header img, .team-header .crest-fallback,
+.league-header img, .league-header .crest-fallback{
+  width:60px; height:60px; border-radius:16px;
+  background: rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
+  object-fit:contain; display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:17px; flex-shrink:0;
+}
+.player-header img, .player-header .fallback{
+  width:72px; height:72px; border-radius:50%;
+  background: rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15);
+  object-fit:cover; display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:22px; flex-shrink:0;
+}
+.team-header .name, .league-header .name, .player-header .name{
+  font-family: var(--type-entity-title-family);
+  font-size: var(--type-entity-title-size);
+  font-weight: var(--type-entity-title-weight);
+  letter-spacing: var(--type-entity-title-tracking);
+  color:#fff;
+}
+.team-header .country, .league-header .country, .player-header .meta{
+  font-size:11px; color: rgba(255,255,255,.6); letter-spacing:.03em; margin-top:4px;
+}
+.team-header .country, .league-header .country{ text-transform:uppercase; }
+.eh-stat{ margin-left:auto; text-align:right; flex-shrink:0; }
+.eh-stat .value{
+  font-family: var(--font-display); font-weight:800; line-height:1; color:#fff;
+  font-size: clamp(26px,5vw,36px);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.eh-stat .label{ font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color: rgba(255,255,255,.62); margin-top:3px; }
+
+/* ============================================================
+   CHIP — single unified filter/selector control, replacing
+   V1's several divergent pill implementations. UTILITY.
+   ============================================================ */
+.chip{
+  appearance:none; -webkit-appearance:none;
+  display:inline-flex; align-items:center; gap:6px;
+  flex-shrink:0;
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-data);
+  border:1px solid var(--border-subtle);
+  font-family: var(--type-metadata-family);
+  font-size:11.5px; font-weight:600;
+  color: var(--text-secondary);
+  cursor:pointer;
+  white-space:nowrap;
+}
+.chip.active{ background: var(--text-primary); color: var(--surface-canvas); border-color:transparent; font-weight:700; }
+.chip.chip--live{ color: var(--status-live); }
+.chip.chip--live .chip-dot{ width:7px; height:7px; border-radius:50%; background: var(--status-live); animation: mr-pulse var(--duration-pulse) infinite; }
+.chip.chip--live.active{ background: var(--status-live); color:#fff; border-color:transparent; }
+.chip.chip--live.active .chip-dot{ background:#fff; }
+.chip:focus-visible{ outline:2px solid var(--accent-lime); outline-offset:2px; }
+
+/* ============================================================
+   STAT COMPARISON — home-vs-away single-stat row. UTILITY.
+   No card, no box; label with two flanking numbers and a bar.
+   ============================================================ */
+.stat-comp{ display:grid; grid-template-columns:42px 1fr 42px; align-items:center; gap:10px; padding:10px 2px; }
+.stat-comp .stat-val{
+  font-family: var(--font-numeral); font-variant-numeric: tabular-nums lining-nums;
+  font-weight:800; text-align:center; font-size:13px;
+}
+.stat-comp .stat-label{ text-align:center; color: var(--text-tertiary); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; }
+.stat-comp .stat-bar{ height:5px; border-radius:3px; background: var(--surface-elevated); position:relative; overflow:hidden; margin-top:5px; grid-column:1/-1; display:flex; }
+.stat-comp .stat-bar .fill-home{ background: var(--status-home); height:100%; }
+.stat-comp .stat-bar .fill-away{ background: var(--status-away); height:100%; }
+
+/* ============================================================
+   STAT STRIP — broadcast-style headline number strip. UTILITY
+   presentation of a small set of season totals (Team's stats
+   tab), Big Shoulders Display numerals, no per-number boxing.
+   ============================================================ */
+.stat-strip{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap: var(--space-3); }
+.stat-strip .ss-item{ text-align:center; padding: var(--space-3) var(--space-2); background: var(--surface-data); border-radius: var(--radius-lg); }
+.stat-strip .ss-value{
+  font-family: var(--font-display); font-weight:800; line-height:1; color: var(--accent-lime);
+  font-size: clamp(24px,4vw,32px);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.stat-strip .ss-label{ font-size:11px; color: var(--text-secondary); margin-top:6px; }
+
+/* ============================================================
+   PLAYER ENTITY — one component, two layout modes: `list`
+   (Match lineups, dense) and `grid` (Team squad). UTILITY.
+   ============================================================ */
+.pe-list{ display:flex; align-items:center; gap:8px; font-size:12.5px; padding:5px 0; color: var(--text-secondary); cursor:pointer; }
+.pe-list .pe-num{ width:20px; height:20px; border-radius:6px; background: var(--accent-lime-dim); color: var(--accent-lime); font-family: var(--font-numeral); font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-variant-numeric: tabular-nums; }
+.pe-list .pe-cap{ font-size:10px; color: var(--status-live); font-weight:800; margin-left:2px; }
+
+.pe-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:10px; }
+.pe-card{ background: var(--surface-data); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding:12px; cursor:pointer; }
+.pe-card .pe-num{ font-weight:800; color: var(--accent-lime); font-size:12px; font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
+.pe-card .pe-name{ font-size:13px; font-weight:600; margin-top:4px; color: var(--text-primary); }
+.pe-card .pe-country{ font-size:10.5px; color: var(--text-tertiary); margin-top:2px; }
+
+/* ============================================================
+   EMPTY STATE — one canonical treatment, all five pages.
+   ============================================================ */
+.empty-note, .empty-state{ font-size:13px; color: var(--text-tertiary); padding: var(--space-2) 0; }
+.empty-note .action, .empty-state .action{ color: var(--accent-lime); cursor:pointer; font-weight:600; margin-left:4px; }
+
