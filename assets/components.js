@@ -256,12 +256,14 @@
     var casaNum = parseFloat(stat.casa) || 0, foraNum = parseFloat(stat.fora) || 0;
     var total = casaNum + foraNum || 1;
     var pctCasa = Math.round((casaNum / total) * 100);
+    var homeLeads = casaNum > foraNum;
+    var awayLeads = foraNum > casaNum;
     return (
       '<div class="stat-comp">' +
-        '<span class="stat-val">' + stat.casa + (stat.sufixo || '') + '</span>' +
+        '<span class="stat-val' + (homeLeads ? ' leading' : '') + '">' + stat.casa + (stat.sufixo || '') + '</span>' +
         '<span class="stat-label">' + stat.label + '</span>' +
-        '<span class="stat-val">' + stat.fora + (stat.sufixo || '') + '</span>' +
-        '<div class="stat-bar"><div class="fill-home" style="width:' + pctCasa + '%"></div><div class="fill-away" style="width:' + (100 - pctCasa) + '%"></div></div>' +
+        '<span class="stat-val' + (awayLeads ? ' leading' : '') + '">' + stat.fora + (stat.sufixo || '') + '</span>' +
+        '<div class="stat-bar"><div class="fill-home' + (homeLeads ? ' leading' : '') + '" style="width:' + pctCasa + '%"></div><div class="fill-away' + (awayLeads ? ' leading' : '') + '" style="width:' + (100 - pctCasa) + '%"></div></div>' +
       '</div>'
     );
   }

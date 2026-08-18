@@ -351,17 +351,24 @@
 
 /* ============================================================
    STAT COMPARISON — home-vs-away single-stat row. UTILITY.
-   No card, no box; label with two flanking numbers and a bar.
+   No card, no box; the two numbers carry the hierarchy, a thin
+   restrained track underneath shows the split — not a heavy
+   blue-vs-red bar. Lime marks whichever side leads (not "home"
+   by convention), the other side stays neutral.
    ============================================================ */
-.stat-comp{ display:grid; grid-template-columns:42px 1fr 42px; align-items:center; gap:10px; padding:10px 2px; }
+.stat-comp{ display:grid; grid-template-columns:56px 1fr 56px; align-items:center; column-gap:14px; padding:13px 2px; border-bottom:1px solid var(--border-subtle); }
+.stat-comp:last-child{ border-bottom:none; }
 .stat-comp .stat-val{
   font-family: var(--font-numeral); font-variant-numeric: tabular-nums lining-nums;
-  font-weight:800; text-align:center; font-size:13px;
+  font-weight:800; text-align:center; font-size:16px; color: var(--text-tertiary);
 }
-.stat-comp .stat-label{ text-align:center; color: var(--text-tertiary); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; }
-.stat-comp .stat-bar{ height:5px; border-radius:3px; background: var(--surface-elevated); position:relative; overflow:hidden; margin-top:5px; grid-column:1/-1; display:flex; }
-.stat-comp .stat-bar .fill-home{ background: var(--status-home); height:100%; }
-.stat-comp .stat-bar .fill-away{ background: var(--status-away); height:100%; }
+.stat-comp .stat-val.leading{ color: var(--accent-lime); }
+.stat-comp .stat-label{ text-align:center; color: var(--text-secondary); font-size:10px; text-transform:uppercase; letter-spacing:.05em; }
+.stat-comp .stat-bar{ height:3px; border-radius:2px; background: var(--border-subtle); position:relative; overflow:hidden; margin-top:9px; grid-column:1/-1; display:flex; }
+.stat-comp .stat-bar .fill-home{ background: var(--text-tertiary); height:100%; }
+.stat-comp .stat-bar .fill-away{ background: var(--text-tertiary); height:100%; }
+.stat-comp .stat-bar .fill-home.leading{ background: var(--accent-lime); }
+.stat-comp .stat-bar .fill-away.leading{ background: var(--accent-lime); }
 
 /* ============================================================
    STAT STRIP — broadcast-style headline number strip. UTILITY

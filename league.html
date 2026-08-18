@@ -25,7 +25,7 @@
   /* .league-header is now the canonical EntityHero component (Entity
      Gradient) shared in assets/components.css — see Pass 3B. */
 
-  .tabs{ display:flex; gap:22px; overflow-x:auto; scrollbar-width:none; padding-bottom:14px; margin-bottom:18px; border-bottom:1px solid var(--line); position:sticky; top:0; background: var(--bg); z-index:10; padding-top:6px; }
+  .tabs{ display:flex; gap:26px; overflow-x:auto; scrollbar-width:none; padding-bottom:12px; margin-bottom: var(--space-6); border-bottom:1px solid var(--line); position:sticky; top:0; background: var(--bg); z-index:10; padding-top:6px; }
   .tab-content{ animation: fadeIn .18s ease; }
   @keyframes fadeIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
   a:focus-visible, button:focus-visible, [tabindex]:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; border-radius:6px; }
@@ -35,11 +35,11 @@
   .tabs::-webkit-scrollbar{ display:none; }
   .tab-btn{ appearance:none; -webkit-appearance:none; flex-shrink:0; padding:2px 0 12px; font-size:13.5px; font-weight:600; color: var(--text-2); white-space:nowrap; cursor:pointer; position:relative; }
   .tab-btn.active{ color: var(--text-0); }
-  .tab-btn.active::after{ content:""; position:absolute; left:0; right:0; bottom:-15px; height:2px; background: var(--white); }
+  .tab-btn.active::after{ content:""; position:absolute; left:0; right:0; bottom:-13px; height:2px; background: var(--lime); }
   .tab-content{ display:none; }
   .tab-content.active{ display:block; }
 
-  h2{ font-size:14.5px; font-weight:700; margin:18px 0 10px; }
+  h2{ font-family: var(--type-section-title-family); font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color: var(--text-2); margin: var(--space-6) 0 var(--space-3); padding-bottom: var(--space-2); border-bottom:1px solid var(--border-subtle); }
   h2:first-child{ margin-top:0; }
 
   .featured-card{ background: linear-gradient(135deg, #C6FF3D 0%, #7ED957 45%, #16A34A 100%); border:1px solid transparent; border-radius:16px; padding:20px; text-align:center; cursor:pointer; color:#0D2A0F; }
@@ -54,7 +54,11 @@
   .card h3{ font-size:13.5px; font-weight:700; margin-bottom:10px; }
   .stat-row{ display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:12.5px; }
   .stat-row:last-child{ border-bottom:none; }
-  .stat-row .val{ font-weight:800; color: var(--lime); }
+  .stat-row .val{ font-weight:800; color: var(--lime); font-family: var(--font-numeral); font-variant-numeric: tabular-nums; }
+
+  .stat-category{ margin-bottom: var(--space-6); }
+  .stat-category:last-child{ margin-bottom:0; }
+  .stat-category h3{ font-family: var(--type-row-primary-family); font-size:12.5px; font-weight:700; color: var(--text-0); margin-bottom:4px; }
 
   .filter-pills{ display:flex; gap:6px; margin-bottom:12px; }
 
@@ -104,7 +108,7 @@
       <button class="chip active" data-view="proximos">Próximos</button>
       <button class="chip" data-view="recentes">Resultados recentes</button>
     </div>
-    <div class="card" id="jogos-content"><div class="empty-note">A carregar...</div></div>
+    <div id="jogos-content"><div class="empty-note">A carregar...</div></div>
   </div>
 
   <div class="tab-content" id="tab-standings">
@@ -114,7 +118,7 @@
       <button class="chip" data-venue="home">Casa</button>
       <button class="chip" data-venue="away">Fora</button>
     </div>
-    <div class="card" id="standings-table"><div class="empty-note">A carregar...</div></div>
+    <div id="standings-table"><div class="empty-note">A carregar...</div></div>
   </div>
 
   <div class="tab-content" id="tab-stats">
@@ -219,7 +223,7 @@
       const categoriasComDados = Object.values(est).filter(c => c.dados && c.dados.length);
       document.getElementById('stats-content').innerHTML = categoriasComDados.length
         ? categoriasComDados.map(c => `
-          <div class="card"><h3>${c.titulo}</h3>
+          <div class="stat-category"><h3>${c.titulo}</h3>
             ${c.dados.map(p => `<div class="stat-row"><span>${p.jogador} <span style="color:var(--text-2)">· ${p.equipa}</span></span><span class="val">${p.valor}</span></div>`).join('')}
           </div>`).join('')
         : '<div class="empty-note">Estatísticas não disponíveis para esta liga.</div>';

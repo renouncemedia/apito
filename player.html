@@ -27,13 +27,19 @@
   /* .player-header is now the canonical EntityHero component (Entity
      Gradient) shared in assets/components.css — see Pass 3B. */
 
-  .info-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap:10px; margin-bottom:20px; }
-  .info-box{ background: var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
-  .info-box .val{ font-weight:700; font-size:14px; }
-  .info-box .label{ font-size:10px; color: var(--text-2); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
+  /* Bio facts: a compact inline key:value strip rather than six
+     separate bordered boxes — reduces "unnecessary large containers
+     around simple lists" while keeping every fact equally scannable. */
+  .info-grid{ display:flex; flex-wrap:wrap; column-gap: var(--space-6); row-gap: var(--space-3); margin-bottom: var(--space-6); padding-bottom: var(--space-5); border-bottom:1px solid var(--border-subtle); }
+  .info-box{ min-width:90px; }
+  .info-box .val{ font-family: var(--font-numeral); font-variant-numeric: tabular-nums; font-weight:700; font-size:14px; color: var(--text-0); }
+  .info-box .label{ font-size:9.5px; color: var(--text-2); text-transform:uppercase; letter-spacing:.05em; margin-top:3px; }
 
-  h2{ font-size:14.5px; font-weight:700; margin:18px 0 10px; }
+  h2{ font-family: var(--type-section-title-family); font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color: var(--text-2); margin: var(--space-6) 0 var(--space-3); padding-bottom: var(--space-2); border-bottom:1px solid var(--border-subtle); }
+  h2:first-of-type{ margin-top:0; }
 
+  /* .card kept only for elevated content — stats-by-competition and
+     transfer history below are already self-contained row lists. */
   .card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:6px 14px; }
 
   .stat-row{ display:grid; grid-template-columns:1fr 40px 40px 40px 44px; gap:8px; align-items:center; padding:9px 4px; border-bottom:1px solid var(--line); font-size:12.5px; }
@@ -80,10 +86,10 @@
   <div class="info-grid" id="info-grid"></div>
 
   <h2>Estatísticas por competição</h2>
-  <div class="card" id="stats-content"><div class="empty-note">A carregar...</div></div>
+  <div id="stats-content"><div class="empty-note">A carregar...</div></div>
 
   <h2>Histórico de transferências</h2>
-  <div class="card" id="transfers-content"><div class="empty-note">A carregar...</div></div>
+  <div id="transfers-content"><div class="empty-note">A carregar...</div></div>
 </div>
 
 <script>

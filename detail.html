@@ -25,75 +25,103 @@
   /* MatchHero — the Match Detail identity moment. Hero Gradient
      (Section 3): full-intensity, used exactly once per screen, here
      only. Display Score typography role for the score itself. */
-  .score-block{ position:relative; background: var(--gradient-hero); border-radius: var(--radius-2xl); padding: var(--space-7) var(--space-5) var(--space-5); text-align:center; margin-bottom:20px; color:#fff; overflow:hidden; }
+  .score-block{ position:relative; background: var(--gradient-hero); border-radius: var(--radius-2xl); padding: var(--space-7) var(--space-5) var(--space-6); text-align:center; margin-bottom: var(--space-7); color:#fff; overflow:hidden; }
   .score-block .liga{ font-family: var(--type-eyebrow-family); font-size: var(--type-eyebrow-size); font-weight: var(--type-eyebrow-weight); letter-spacing: var(--type-eyebrow-tracking); text-transform: var(--type-eyebrow-case); color: rgba(255,255,255,0.65); }
-  .score-teams-row{ display:flex; align-items:center; justify-content:center; gap:22px; margin-top:14px; }
-  .score-team-crest{ display:flex; flex-direction:column; align-items:center; gap:8px; text-decoration:none; color:#fff; max-width:120px; }
-  .score-team-crest img{ width:48px; height:48px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,0.08); }
+  .score-teams-row{ display:flex; align-items:center; justify-content:center; gap:26px; margin-top:16px; }
+  .score-team-crest{ display:flex; flex-direction:column; align-items:center; gap:9px; text-decoration:none; color:#fff; max-width:120px; }
+  .score-team-crest img{ width:52px; height:52px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,0.08); }
   .score-team-crest span{ font-family: var(--type-entity-title-family); font-size:12.5px; font-weight:700; line-height:1.2; }
-  .score-block .score{ font-family: var(--type-display-score-family); font-size: clamp(44px,9vw,64px); font-weight: var(--type-display-score-weight); letter-spacing: var(--type-display-score-tracking); font-variant-numeric: tabular-nums lining-nums; flex-shrink:0; line-height:1; }
-  .score-block .estado{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; margin-top:16px; padding:5px 13px; border-radius:100px; background: rgba(255,255,255,0.12); color:#fff; }
+  .score-block .score{ font-family: var(--type-display-score-family); font-size: clamp(48px,10vw,72px); font-weight: var(--type-display-score-weight); letter-spacing: var(--type-display-score-tracking); font-variant-numeric: tabular-nums lining-nums; flex-shrink:0; line-height:1; }
+  .score-block .estado{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; margin-top:18px; padding:5px 13px; border-radius:100px; background: rgba(255,255,255,0.12); color:#fff; }
   .score-block .estado.live{ background: var(--live); color:#fff; }
   .score-block .estado.live .dot{ width:6px; height:6px; border-radius:50%; background:#fff; animation: pulse 1.3s infinite; }
   @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.35} }
 
-  h2{ font-size:15px; font-weight:700; margin:24px 0 10px; }
+  /* Section Title — replaces the old heading→card→heading→card rhythm.
+     Sections are told apart by typography + generous top spacing, not
+     by individually boxing each one. A hairline sits under the title
+     to anchor it without wrapping the content beneath in a card. */
+  h2{
+    font-family: var(--type-section-title-family);
+    font-size: 12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    color: var(--text-2);
+    margin: var(--space-7) 0 var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+  }
   h2:first-of-type{ margin-top:0; }
 
-  .card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  /* .card is kept only for content that is a genuinely independent,
+     elevated object (none remain on this page — every section below
+     now groups via spacing/dividers instead). */
 
-  /* Event feed keeps its own left-edge home/away tint (a genuinely
-     serial, timestamped list benefits from per-row separation, per
-     the design system's EventRow entry) — everything else here now
-     draws on shared tokens instead of hardcoded hex. */
-  .event-row{ display:flex; align-items:center; gap:12px; padding:9px 4px 9px 10px; border-bottom:1px solid var(--line); font-size:13px; border-left:3px solid transparent; }
-  .event-row.evento-casa{ border-left-color: var(--blue); }
-  .event-row.evento-fora{ border-left-color: var(--red-stat); }
+  /* Event feed — minute is the strong anchor (Big Shoulders, large,
+     lime), team relation shown by a slim left-edge tint rather than a
+     badge, and the type is a small colored label instead of a pill,
+     so a run of events reads as a scannable timeline, not a badge
+     collection. */
+  .event-row{ display:flex; align-items:baseline; gap:14px; padding:10px 4px; border-bottom:1px solid var(--border-subtle); font-size:13px; border-left:2px solid transparent; }
+  .event-row.evento-casa{ border-left-color: var(--status-home); }
+  .event-row.evento-fora{ border-left-color: var(--status-away); }
   .event-row:last-child{ border-bottom:none; }
-  .event-min{ font-family: var(--font-numeral); font-variant-numeric: tabular-nums; font-weight:800; color: var(--lime); min-width:32px; }
+  .event-min{ font-family: var(--font-numeral); font-variant-numeric: tabular-nums; font-weight:800; font-size:15px; color: var(--lime); min-width:30px; flex-shrink:0; }
   .event-desc{ color: var(--text-1); flex:1; }
   .event-desc b{ color: var(--text-0); }
-  .event-tag{ font-size:9.5px; font-weight:700; padding:3px 8px; border-radius:6px; background: var(--card-2); color: var(--text-2); text-transform:uppercase; letter-spacing:0.3px; }
-  .event-tag.golo{ background: rgba(34,197,94,0.15); color: var(--blue); }
-  .event-tag.amarelo{ background: rgba(240,200,60,0.15); color:#F0C83C; }
-  .event-tag.vermelho{ background: rgba(255,59,48,0.15); color: var(--live); }
+  .event-tag{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color: var(--text-2); flex-shrink:0; }
+  .event-tag.golo{ color: var(--status-goal); }
+  .event-tag.amarelo{ color:#F0C83C; }
+  .event-tag.vermelho{ color: var(--live); }
 
-  .lineups{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  @media (max-width:560px){ .lineups{ grid-template-columns:1fr; } }
-  .lineup-card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
-  .lineup-card h3{ font-size:13.5px; font-weight:700; margin-bottom:3px; }
-  .lineup-card .formacao{ font-size:10.5px; color: var(--text-2); margin-bottom:10px; }
-  /* Lineup players are now the canonical PlayerEntity list variant
+  /* Lineups — one roster composition, not two giant cards. A single
+     vertical divider on desktop, formation as quiet metadata, squad
+     numbers doing the scanning work via the canonical PlayerEntity
+     list rows. */
+  .lineups{ display:grid; grid-template-columns:1fr 1fr; gap: var(--space-6); }
+  @media (max-width:560px){ .lineups{ grid-template-columns:1fr; gap: var(--space-5); } }
+  .lineup-card{ padding:0; }
+  .lineup-card:first-child{ border-right:1px solid var(--border-subtle); padding-right: var(--space-5); }
+  @media (max-width:560px){ .lineup-card:first-child{ border-right:none; padding-right:0; border-bottom:1px solid var(--border-subtle); padding-bottom: var(--space-4); } }
+  .lineup-card h3{ font-family: var(--type-row-primary-family); font-size:13.5px; font-weight:700; margin-bottom:2px; color: var(--text-0); }
+  .lineup-card .formacao{ font-size:10.5px; color: var(--text-2); margin-bottom:10px; text-transform:uppercase; letter-spacing:.03em; }
+  /* Lineup players are the canonical PlayerEntity list variant
      (.pe-list) shared in assets/components.css — see Pass 3B. */
 
-  .injury-row{ display:flex; justify-content:space-between; font-size:12.5px; padding:7px 0; color: var(--text-1); border-bottom:1px solid var(--line); }
+  .injury-row{ display:flex; justify-content:space-between; font-size:12.5px; padding:8px 0; color: var(--text-1); border-bottom:1px solid var(--border-subtle); }
   .injury-row:last-child{ border-bottom:none; }
   .injury-row .motivo{ color: var(--text-2); font-size:11px; }
 
-  /* Stat comparison rows are now the canonical StatComparison
-     component (.stat-comp) shared in assets/components.css. */
+  /* Stat comparison rows are the canonical StatComparison component
+     (.stat-comp) shared in assets/components.css. */
 
-  .momentum-chart{ display:flex; align-items:center; height:74px; gap:1px; }
-  .momentum-bar{ flex:1; min-width:2px; background: var(--blue); align-self:flex-end; border-radius:1px 1px 0 0; }
-  .momentum-bar.negativo{ background: var(--red-stat); align-self:flex-start; }
+  /* Momentum — Apito's own duotone (lime/purple) instead of a generic
+     analytics-widget blue/red, baseline drawn so the "pressure" shape
+     reads as one coherent line rather than two disconnected halves. */
+  .momentum-chart{ position:relative; display:flex; align-items:center; height:68px; gap:1px; padding-top:2px; }
+  .momentum-chart::before{ content:""; position:absolute; left:0; right:0; top:50%; height:1px; background: var(--border-subtle); }
+  .momentum-bar{ position:relative; flex:1; min-width:2px; background: var(--accent-lime); align-self:flex-end; border-radius:1px 1px 0 0; opacity:.85; }
+  .momentum-bar.negativo{ background: var(--accent-purple); align-self:flex-start; border-radius:0 0 1px 1px; }
 
-  .pitch{ position:relative; width:100%; aspect-ratio:3/2; background: linear-gradient(180deg,#123a1e,#0d2c17); border-radius:14px; border:1px solid var(--line); overflow:hidden; }
-  .pitch::before{ content:""; position:absolute; inset:8%; border:1px solid rgba(255,255,255,0.15); }
-  .pitch::after{ content:""; position:absolute; left:50%; top:8%; bottom:8%; width:1px; background: rgba(255,255,255,0.15); }
-  .pitch-player{ position:absolute; width:26px; height:26px; border-radius:50%; background: var(--blue); color:#0A0A0C; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; transform:translate(-50%,-50%); }
-  .pitch-player.away{ background: var(--red-stat); color:#fff; }
-  .pitch-legend{ display:flex; gap:14px; margin-top:8px; font-size:11px; color: var(--text-2); }
+  /* Pitch — contained and framed rather than a huge full-bleed
+     rectangle: real football aspect ratio, capped width, softer green,
+     centered on the page like a diagram, not a backdrop. */
+  .pitch-wrap{ max-width:520px; margin:0 auto; }
+  .pitch{ position:relative; width:100%; aspect-ratio:105/68; background: linear-gradient(180deg,#0F2E1A,#0A2013); border-radius: var(--radius-lg); border:1px solid var(--border-subtle); overflow:hidden; }
+  .pitch::before{ content:""; position:absolute; inset:6%; border:1px solid rgba(255,255,255,0.12); }
+  .pitch::after{ content:""; position:absolute; left:50%; top:6%; bottom:6%; width:1px; background: rgba(255,255,255,0.12); }
+  .pitch-player{ position:absolute; width:22px; height:22px; border-radius:50%; background: var(--accent-lime); color:#0A0A0C; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; transform:translate(-50%,-50%); box-shadow:0 0 0 2px rgba(0,0,0,.35); }
+  .pitch-player.away{ background: var(--accent-purple); color:#fff; }
+  .pitch-legend{ display:flex; justify-content:center; gap:16px; margin-top:10px; font-size:10.5px; color: var(--text-2); }
   .pitch-legend span{ display:inline-flex; align-items:center; gap:5px; }
-  .pitch-legend .dot{ width:9px; height:9px; border-radius:50%; }
+  .pitch-legend .dot{ width:8px; height:8px; border-radius:50%; }
 
-  .shot-dot{ position:absolute; width:10px; height:10px; border-radius:50%; transform:translate(-50%,-50%); border:1.5px solid rgba(0,0,0,0.3); }
-  .shot-dot.goal{ background: var(--blue); width:14px; height:14px; }
+  .shot-dot{ position:absolute; width:9px; height:9px; border-radius:50%; transform:translate(-50%,-50%); border:1.5px solid rgba(0,0,0,0.3); }
+  .shot-dot.goal{ background: var(--accent-lime); width:13px; height:13px; }
   .shot-dot.save{ background:#F0C83C; }
   .shot-dot.miss, .shot-dot.post{ background:transparent; border-color: var(--text-2); }
-  .shot-dot.block{ background: var(--red-stat); opacity:0.6; }
-  .shotmap-legend{ display:flex; flex-wrap:wrap; gap:12px; margin-top:8px; font-size:10.5px; color: var(--text-2); }
+  .shot-dot.block{ background: var(--accent-purple); opacity:0.7; }
+  .shotmap-legend{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-top:10px; font-size:10px; color: var(--text-2); }
   .shotmap-legend span{ display:inline-flex; align-items:center; gap:5px; }
-  .shotmap-legend .dot{ width:9px; height:9px; border-radius:50%; }
+  .shotmap-legend .dot{ width:8px; height:8px; border-radius:50%; }
 
   /* .empty-note is now canonical in assets/components.css */
   a:focus-visible, button:focus-visible, [tabindex]:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; border-radius:6px; }
@@ -129,28 +157,28 @@
   </div>
 
   <h2>Confronto direto</h2>
-  <div class="card" id="h2h"><div class="empty-note">A carregar...</div></div>
+  <div id="h2h"><div class="empty-note">A carregar...</div></div>
 
   <h2>Jogadores em falta</h2>
-  <div class="card" id="em-falta"><div class="empty-note">A carregar...</div></div>
+  <div id="em-falta"><div class="empty-note">A carregar...</div></div>
 
   <h2>Estatísticas</h2>
-  <div class="card" id="stats"><div class="empty-note">A carregar...</div></div>
+  <div id="stats"><div class="empty-note">A carregar...</div></div>
 
   <h2>Intensidade do jogo</h2>
-  <div class="card" id="momentum"><div class="empty-note">A carregar...</div></div>
+  <div id="momentum"><div class="empty-note">A carregar...</div></div>
 
   <h2>Eventos</h2>
-  <div class="card" id="events"><div class="empty-note">A carregar eventos...</div></div>
+  <div id="events"><div class="empty-note">A carregar eventos...</div></div>
 
   <h2>Escalações</h2>
   <div class="lineups" id="lineups"><div class="empty-note">A carregar escalações...</div></div>
 
   <h2>Posições médias</h2>
-  <div id="pitch"><div class="empty-note">A carregar...</div></div>
+  <div class="pitch-wrap" id="pitch"><div class="empty-note">A carregar...</div></div>
 
   <h2>Mapa de remates</h2>
-  <div id="shotmap"><div class="empty-note">A carregar...</div></div>
+  <div class="pitch-wrap" id="shotmap"><div class="empty-note">A carregar...</div></div>
 </div>
 
 <script>

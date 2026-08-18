@@ -85,11 +85,13 @@
   @media (max-width:880px){ .content{ grid-template-columns:1fr; } .side-col{ order:2; display:grid; grid-template-columns:1fr 1fr; gap:12px; } }
   @media (max-width:560px){ .side-col{ grid-template-columns:1fr; } }
 
-  .league-group{ margin-bottom:20px; background: var(--card); border:1px solid var(--line); border-radius:18px; padding:6px 0; overflow:hidden; }
-  .league-group-head{ display:flex; align-items:center; justify-content:space-between; padding:13px 16px 11px; border-bottom:1px solid var(--line); cursor:pointer; }
-  .league-group-head .lg-name{ display:flex; align-items:center; gap:9px; font-size:13.5px; font-weight:700; }
-  .league-group-head .lg-name .crest{ width:22px; height:22px; border-radius:7px; background: var(--purple-dim); color: var(--purple); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; flex-shrink:0; }
-  .league-group-head .lg-country{ font-size:10.5px; color: var(--text-2); font-weight:500; }
+  .league-group{ margin-bottom: var(--space-6); }
+  .league-group-head{ display:flex; align-items:baseline; justify-content:space-between; padding-bottom:8px; margin-bottom:2px; border-bottom:1px solid var(--border-subtle); cursor:pointer; }
+  .league-group-head .lg-name{ display:flex; align-items:center; gap:8px; font-family: var(--type-section-title-family); font-size:12px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color: var(--text-primary); }
+  .league-group-head .lg-name .crest{ width:18px; height:18px; border-radius:6px; background: var(--purple-dim); color: var(--purple); display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; flex-shrink:0; }
+  .league-group-head .lg-country{ font-size:10px; color: var(--text-2); font-weight:500; text-transform:uppercase; letter-spacing:.03em; }
+  .side-card{ background: var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; margin-bottom:16px; }
+  .side-card h3{ font-family: var(--type-section-title-family); font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color: var(--text-2); margin-bottom:12px; }
 
   /* Match rows are now the canonical MatchRow component (Standard /
      Expanded density) from assets/components.css — see Pass 3A. The

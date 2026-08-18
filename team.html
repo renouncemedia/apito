@@ -25,7 +25,7 @@
   /* .team-header is now the canonical EntityHero component (Entity
      Gradient) shared in assets/components.css — see Pass 3B. */
 
-  .tabs{ display:flex; gap:22px; overflow-x:auto; scrollbar-width:none; padding-bottom:14px; margin-bottom:18px; border-bottom:1px solid var(--line); position:sticky; top:0; background: var(--bg); z-index:10; padding-top:6px; }
+  .tabs{ display:flex; gap:26px; overflow-x:auto; scrollbar-width:none; padding-bottom:12px; margin-bottom: var(--space-6); border-bottom:1px solid var(--line); position:sticky; top:0; background: var(--bg); z-index:10; padding-top:6px; }
   .tab-content{ animation: fadeIn .18s ease; }
   @keyframes fadeIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:translateY(0); } }
   a:focus-visible, button:focus-visible, [tabindex]:focus-visible{ outline:2px solid var(--lime); outline-offset:2px; border-radius:6px; }
@@ -35,13 +35,19 @@
   .tabs::-webkit-scrollbar{ display:none; }
   .tab-btn{ appearance:none; -webkit-appearance:none; flex-shrink:0; padding:2px 0 12px; font-size:13.5px; font-weight:600; color: var(--text-2); white-space:nowrap; cursor:pointer; position:relative; }
   .tab-btn.active{ color: var(--text-0); }
-  .tab-btn.active::after{ content:""; position:absolute; left:0; right:0; bottom:-15px; height:2px; background: var(--white); }
+  .tab-btn.active::after{ content:""; position:absolute; left:0; right:0; bottom:-13px; height:2px; background: var(--lime); }
   .tab-content{ display:none; }
   .tab-content.active{ display:block; }
 
-  h2{ font-size:14.5px; font-weight:700; margin:18px 0 10px; }
+  /* Section Title — small, tracked, uppercase; groups content via
+     typography + a hairline instead of individually boxing it. */
+  h2{ font-family: var(--type-section-title-family); font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color: var(--text-2); margin: var(--space-6) 0 var(--space-3); padding-bottom: var(--space-2); border-bottom:1px solid var(--border-subtle); }
   h2:first-child{ margin-top:0; }
 
+  /* .card is kept only for elevated/independent content (StatStrip
+     items, entity headers) — simple lists (MatchRow, DataTable,
+     PlayerEntity rows) are already self-contained components and no
+     longer get wrapped in an extra bordered box. */
   .card{ background: var(--card); border:1px solid var(--line); border-radius:14px; padding:8px 14px; }
 
   /* Match rows are now the canonical Compact MatchRow component from
@@ -101,9 +107,9 @@
 
   <div class="tab-content active" id="tab-details">
     <h2>Próximo jogo</h2>
-    <div class="card" id="details-next"><div class="empty-note">A carregar...</div></div>
+    <div id="details-next"><div class="empty-note">A carregar...</div></div>
     <h2>Últimos resultados</h2>
-    <div class="card" id="details-recent"><div class="empty-note">A carregar...</div></div>
+    <div id="details-recent"><div class="empty-note">A carregar...</div></div>
   </div>
 
   <div class="tab-content" id="tab-matches">
@@ -112,12 +118,12 @@
       <button class="chip" data-view="round">Por jornada</button>
       <button class="chip" data-view="team">Por adversário</button>
     </div>
-    <div class="card" id="matches-content"><div class="empty-note">A carregar...</div></div>
+    <div id="matches-content"><div class="empty-note">A carregar...</div></div>
   </div>
 
   <div class="tab-content" id="tab-standings">
     <h2 id="standings-title">Classificação</h2>
-    <div class="card" id="standings-table"><div class="empty-note">A carregar...</div></div>
+    <div id="standings-table"><div class="empty-note">A carregar...</div></div>
   </div>
 
   <div class="tab-content" id="tab-squad">
@@ -129,7 +135,7 @@
 
   <div class="tab-content" id="tab-topplayers">
     <h2>Melhores marcadores da equipa</h2>
-    <div class="card" id="topplayers-content"><div class="empty-note">A carregar...</div></div>
+    <div id="topplayers-content"><div class="empty-note">A carregar...</div></div>
   </div>
 
   <div class="tab-content" id="tab-stats">
