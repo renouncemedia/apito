@@ -265,7 +265,15 @@
 
   paintFavStars();
 
-  document.getElementById('search-input').addEventListener('input', (e) => {
+  // #search-input is rendered by ApitoShell.renderTopbar() (assets/shell.js),
+  // a different script than this one. Under normal load order it exists by
+  // this point (the topbar mount script runs earlier in the document), but
+  // this line is a cross-script dependency and must be guarded the same way
+  // every other shell-injected element in this file already is (see
+  // fav-toggle/bn-favoritos/nav-favoritos above) — a failed/slow shell.js
+  // load must not throw and abort the rest of this script.
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) searchInput.addEventListener('input', (e) => {
     const termo = e.target.value.trim().toLowerCase();
     document.querySelectorAll('.mr[data-teams]').forEach(row => {
       const teams = (row.dataset.teams || '').toLowerCase();
