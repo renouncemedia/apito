@@ -125,9 +125,10 @@
   grid-template-columns: 40px 1fr 44px;
   align-items:center;
   column-gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
   border-bottom:1px solid var(--border-subtle);
 }
+.mr--standard{ padding: 7px var(--space-3); }
+.mr--expanded{ padding: var(--space-2) var(--space-3); }
 .mr--standard:last-child,
 .mr--expanded:last-child{ border-bottom:none; }
 .mr--standard:hover,
@@ -139,18 +140,19 @@
 .mr--expanded .mr-status-text.mr-status-time{ text-transform:none; font-weight:600; }
 
 .mr-teams{ display:flex; flex-direction:column; gap: var(--space-2); min-width:0; }
+.mr--standard .mr-teams{ gap:5px; }
 .mr-team{ display:flex; align-items:center; justify-content:space-between; gap: var(--space-2); }
 .mr-side{ display:flex; align-items:center; gap:9px; min-width:0; text-decoration:none; }
 .mr-team--winner .mr-name{ font-weight:700; }
 .mr-team--loser .mr-name{ color: var(--text-secondary); font-weight:400; }
 .mr-team--loser .mr-score{ color: var(--text-tertiary); }
 
-.mr--standard .mr-crest,
+.mr--standard .mr-crest{ width:19px; height:19px; font-size:7.5px; }
 .mr--expanded .mr-crest{ width:22px; height:22px; font-size:8.5px; }
 .mr--standard .mr-name,
 .mr--expanded .mr-name{ font-size:13.5px; }
 .mr--standard .mr-score,
-.mr--expanded .mr-score{ font-size:15px; font-weight:800; min-width:18px; }
+.mr--expanded .mr-score{ font-size:14px; font-weight:800; min-width:18px; }
 
 /* Expanded: same shape as Standard, larger crest, plus a metadata
    line, and a Data Surface background — the one MatchRow density

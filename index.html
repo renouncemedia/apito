@@ -42,6 +42,30 @@
   @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   /* Day strip — chips circulares tipo calendário */
+  /* Home intro — editorial opening, typography + whitespace only (no
+     card, no gradient). Establishes identity → date context → today
+     snapshot before the utility filters/feed begin. */
+  .home-intro{ padding: var(--space-7) 0 var(--space-2); }
+  @media (max-width:640px){ .home-intro{ padding: var(--space-6) 0 var(--space-2); } }
+  .home-title{
+    font-family: var(--type-entity-title-family);
+    font-size: clamp(23px, 3.4vw, 29px);
+    font-weight:800;
+    letter-spacing:-0.01em;
+    color: var(--text-0);
+  }
+  .home-context{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:8px;
+    margin-top:9px;
+    font-size:13px;
+    color: var(--text-1);
+  }
+  .home-context .sep{ color: var(--text-2); }
+  .home-date{ font-weight:700; color: var(--text-0); }
+  .home-date::first-letter{ text-transform:uppercase; }
+  .home-snapshot-num{ font-family: var(--font-numeral); font-variant-numeric: tabular-nums; font-weight:700; color: var(--text-0); }
+  .home-snapshot-num.is-live{ color: var(--live); }
+
   .toolbar{ display:flex; align-items:center; gap:10px; padding: 6px 0 14px; }
 
   .date-pill{ flex-shrink:0; display:flex; align-items:center; gap:8px; background: var(--card); border:1px solid var(--line); border-radius:100px; padding: 9px 15px; font-size:12.5px; font-weight:600; cursor:pointer; }
@@ -140,6 +164,15 @@
 
       <!-- Topbar — canonical markup rendered by assets/shell.js; Home renders search+favorites inside it -->
       <script>ApitoShell.renderTopbar();</script>
+
+      <div class="home-intro">
+        <h1 class="home-title">Hoje no futebol</h1>
+        <p class="home-context">
+          <span class="home-date" id="home-date-label">A carregar...</span>
+          <span class="sep">·</span>
+          <span id="home-snapshot">a preparar o resumo do dia…</span>
+        </p>
+      </div>
 
       <div class="mr-rail" id="hero-carousel" style="display:none;"></div>
 
@@ -399,11 +432,37 @@
   let dataAtiva = datasDosChips[0];
 
   const datePillLabel = document.getElementById('date-pill-label');
+  const homeDateLabel = document.getElementById('home-date-label');
   function formatarDataPill(dataStr){
     const d = new Date(dataStr+'T12:00:00');
     const hojeStr = new Date().toISOString().slice(0,10);
     if (dataStr === hojeStr) return 'Hoje';
     return `${String(d.getDate()).padStart(2,'0')} ${d.toLocaleDateString('pt-PT',{weekday:'short',month:'short'})}`;
+  }
+  function formatarDataContexto(dataStr){
+    const d = new Date(dataStr+'T12:00:00');
+    const hojeStr = new Date().toISOString().slice(0,10);
+    const amanhaStr = new Date(hoje.getTime() + 86400000).toISOString().slice(0,10);
+    if (dataStr === hojeStr) return `Hoje, ${d.toLocaleDateString('pt-PT',{day:'numeric',month:'long'})}`;
+    if (dataStr === amanhaStr) return `Amanhã, ${d.toLocaleDateString('pt-PT',{day:'numeric',month:'long'})}`;
+    return d.toLocaleDateString('pt-PT',{weekday:'long',day:'numeric',month:'long'});
+  }
+  if (homeDateLabel) homeDateLabel.textContent = formatarDataContexto(dataAtiva);
+
+  function atualizarResumoDia(jogos){
+    const el = document.getElementById('home-snapshot');
+    if (!el) return;
+    if (!jogos || !jogos.length){
+      el.textContent = apenasAoVivo ? 'sem jogos ao vivo neste momento' : 'sem jogos encontrados para este dia';
+      return;
+    }
+    const emDireto = jogos.filter(j => j.estado === '1H').length;
+    const competicoes = new Set(jogos.map(j => j.liga)).size;
+    const partes = [];
+    if (emDireto > 0) partes.push(`<span class="home-snapshot-num is-live">${emDireto}</span> em direto`);
+    partes.push(`<span class="home-snapshot-num">${jogos.length}</span> jogo${jogos.length === 1 ? '' : 's'}`);
+    partes.push(`<span class="home-snapshot-num">${competicoes}</span> competiç${competicoes === 1 ? 'ão' : 'ões'}`);
+    el.innerHTML = partes.join(' · ');
   }
 
   // ---------- Calendário próprio (substitui o calendário nativo do browser) ----------
@@ -483,6 +542,7 @@
       if (!alvo || alvo.classList.contains('cal-disabled') || alvo.classList.contains('cal-outside')) return;
       dataAtiva = alvo.dataset.iso;
       datePillLabel.textContent = formatarDataPill(dataAtiva);
+      if (homeDateLabel) homeDateLabel.textContent = formatarDataContexto(dataAtiva);
       fecharCalendario();
       carregarJogos();
     });
@@ -492,6 +552,7 @@
     btnHoje.addEventListener('click', () => {
       dataAtiva = datasDosChips[0];
       datePillLabel.textContent = 'Hoje';
+      if (homeDateLabel) homeDateLabel.textContent = formatarDataContexto(dataAtiva);
       fecharCalendario();
       carregarJogos();
     });
@@ -565,6 +626,7 @@
       const cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
       if (cache && cache.data === dataAtiva && cache.liga === ligaAtiva && Array.isArray(cache.jogos) && cache.jogos.length){
         renderJogos(cache.jogos);
+        atualizarResumoDia(cache.jogos);
         document.getElementById('data-status').textContent = `A atualizar... (a mostrar dados de ${new Date(cache.quando).toLocaleTimeString('pt-PT')})`;
       }
     } catch (err) {}
@@ -589,9 +651,11 @@
             <span class="action" onclick="document.getElementById('date-pill-btn').click()">Experimenta outra data →</span>
           </div>`;
         statusEl.textContent = 'API ligada · sem jogos para este filtro';
+        atualizarResumoDia(jogos);
         return;
       }
       renderJogos(jogos);
+      atualizarResumoDia(jogos);
       try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: dataAtiva, liga: ligaAtiva, jogos, quando: Date.now() })); } catch (err) {}
       statusEl.textContent = `Dados ao vivo ligados · ${jogos.length} jogo(s) · atualizado ${new Date().toLocaleTimeString('pt-PT')}`;
     } catch (err) { statusEl.textContent = `Dados de exemplo · erro: ${err.message}`; }
